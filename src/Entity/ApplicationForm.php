@@ -1,0 +1,413 @@
+<?php
+
+namespace App\Entity;
+
+use ApiPlatform\Metadata\Post;
+use App\Controller\Api\ApplicationForm\AddToApplicationFormController;
+use App\Repository\ApplicationFormRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
+use ApiPlatform\OpenApi\Model;
+use Doctrine\ORM\Mapping as ORM;
+
+#[Post(
+    uriTemplate: 'application_forms/add',
+    controller: AddToApplicationFormController::class,
+    openapi: new Model\Operation(
+        requestBody: new Model\RequestBody(
+            content: new \ArrayObject([
+                'multipart/form-data' => [
+                    'schema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'images[]' => [
+                                'type' => 'array',
+                                'items' => [
+                                    'type' => 'string',
+                                    'format' => 'binary'
+                                ],
+                            ],
+
+                            'archive[]' => [
+                                'type' => 'array',
+                                'items' => [
+                                    'type' => 'string',
+                                    'format' => 'binary'
+                                ],
+                            ],
+                            'surname' => [
+                                'type' => 'string',
+                            ],
+                            'name' => [
+                                'type' => 'string',
+                            ],
+                            'patronymic' => [
+                                'type' => 'string',
+                            ],
+                            'city' => [
+                                'type' => 'string',
+                            ],
+                            'category' => [
+                                'type' => 'string',
+                            ],
+                            'militaryRank' => [
+                                'type' => 'string',
+                            ],
+                            'birthDateAt' => [
+                                'type' => 'string',
+                            ],
+                            'deathDateAt' => [
+                                'type' => 'string',
+                            ],
+                            'additional' => [
+                                'type' => 'string',
+                            ],
+                            'surnameSender' => [
+                                'type' => 'string',
+                            ],
+                            'nameSender' => [
+                                'type' => 'string',
+                            ],
+                            'patronymicSender' => [
+                                'type' => 'string',
+                            ],
+                            'phone' => [
+                                'type' => 'string',
+                            ],
+                            'heroAward' => [
+                                'type' => 'string',
+                                'example' => '[{"id":1,"yearAt":"1945","description":"Орден Победы"},{"id":2,"yearAt":"1946","description":"Медаль"}]',
+                                'description' => 'JSON-массив объектов с id, yearAt и description',
+                            ],
+                        ],
+                    ]
+                ]
+            ])
+        )
+    ),
+    deserialize: false
+)]
+#[ORM\Entity(repositoryClass: ApplicationFormRepository::class)]
+class ApplicationForm
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $surname = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $patronymic = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $militaryRank = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $birthDateAt = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $additional = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $surnameSender = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $nameSender = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $patronymicSender = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $phone = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $category = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $deathDateAt = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $city = null;
+
+    /**
+     * @var Collection<int, ApplicationFormImages>
+     */
+    #[ORM\OneToMany(targetEntity: ApplicationFormImages::class, mappedBy: 'applicationForm', cascade: ['all'])]
+    private Collection $images;
+
+    /**
+     * @var Collection<int, ApplicationFormArchive>
+     */
+    #[ORM\OneToMany(targetEntity: ApplicationFormArchive::class, mappedBy: 'applicationForm', cascade: ['all'])]
+    private Collection $archive;
+
+    /**
+     * @var Collection<int, ApplicationFormHeroAward>
+     */
+    #[ORM\OneToMany(targetEntity: ApplicationFormHeroAward::class, mappedBy: 'applicationForm', cascade: ['all'])]
+    private Collection $heroAward;
+
+    public function __construct()
+    {
+        $this->images = new ArrayCollection();
+        $this->archive = new ArrayCollection();
+        $this->heroAward = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getSurname(): ?string
+    {
+        return $this->surname;
+    }
+
+    public function setSurname(string $surname): static
+    {
+        $this->surname = $surname;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getPatronymic(): ?string
+    {
+        return $this->patronymic;
+    }
+
+    public function setPatronymic(?string $patronymic): static
+    {
+        $this->patronymic = $patronymic;
+
+        return $this;
+    }
+
+    public function getMilitaryRank(): ?string
+    {
+        return $this->militaryRank;
+    }
+
+    public function setMilitaryRank(?string $militaryRank): static
+    {
+        $this->militaryRank = $militaryRank;
+
+        return $this;
+    }
+
+    public function getBirthDateAt(): ?string
+    {
+        return $this->birthDateAt;
+    }
+
+    public function setBirthDateAt(?string $birthDateAt): static
+    {
+        $this->birthDateAt = $birthDateAt;
+
+        return $this;
+    }
+
+    public function getAdditional(): ?string
+    {
+        return $this->additional;
+    }
+
+    public function setAdditional(?string $additional): static
+    {
+        $this->additional = $additional;
+
+        return $this;
+    }
+
+    public function getSurnameSender(): ?string
+    {
+        return $this->surnameSender;
+    }
+
+    public function setSurnameSender(string $surnameSender): static
+    {
+        $this->surnameSender = $surnameSender;
+
+        return $this;
+    }
+
+    public function getNameSender(): ?string
+    {
+        return $this->nameSender;
+    }
+
+    public function setNameSender(string $nameSender): static
+    {
+        $this->nameSender = $nameSender;
+
+        return $this;
+    }
+
+    public function getPatronymicSender(): ?string
+    {
+        return $this->patronymicSender;
+    }
+
+    public function setPatronymicSender(?string $patronymicSender): static
+    {
+        $this->patronymicSender = $patronymicSender;
+
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(string $phone): static
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getCategory(): ?string
+    {
+        return $this->category;
+    }
+
+    public function setCategory(string $category): static
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    public function getDeathDateAt(): ?string
+    {
+        return $this->deathDateAt;
+    }
+
+    public function setDeathDateAt(?string $deathDateAt): static
+    {
+        $this->deathDateAt = $deathDateAt;
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(?string $city): static
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ApplicationFormImages>
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(ApplicationFormImages $image): static
+    {
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+            $image->setApplicationForm($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(ApplicationFormImages $image): static
+    {
+        if ($this->images->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getApplicationForm() === $this) {
+                $image->setApplicationForm(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ApplicationFormArchive>
+     */
+    public function getArchive(): Collection
+    {
+        return $this->archive;
+    }
+
+    public function addArchive(ApplicationFormArchive $archive): static
+    {
+        if (!$this->archive->contains($archive)) {
+            $this->archive->add($archive);
+            $archive->setApplicationForm($this);
+        }
+
+        return $this;
+    }
+
+    public function removeArchive(ApplicationFormArchive $archive): static
+    {
+        if ($this->archive->removeElement($archive)) {
+            // set the owning side to null (unless already changed)
+            if ($archive->getApplicationForm() === $this) {
+                $archive->setApplicationForm(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ApplicationFormHeroAward>
+     */
+    public function getHeroAward(): Collection
+    {
+        return $this->heroAward;
+    }
+
+    public function addHeroAward(ApplicationFormHeroAward $heroAward): static
+    {
+        if (!$this->heroAward->contains($heroAward)) {
+            $this->heroAward->add($heroAward);
+            $heroAward->setApplicationForm($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHeroAward(ApplicationFormHeroAward $heroAward): static
+    {
+        if ($this->heroAward->removeElement($heroAward)) {
+            // set the owning side to null (unless already changed)
+            if ($heroAward->getApplicationForm() === $this) {
+                $heroAward->setApplicationForm(null);
+            }
+        }
+
+        return $this;
+    }
+}
