@@ -7,9 +7,11 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\MilitaryRanksRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[GetCollection(
     paginationEnabled: false,
+    normalizationContext: ['groups' => ['militaryRanks:read']],
 )]
 #[ApiFilter(SearchFilter::class, properties: ['category' => 'exact'])]
 #[ORM\Entity(repositoryClass: MilitaryRanksRepository::class)]
@@ -18,12 +20,15 @@ class MilitaryRanks
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['militaryRanks:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['militaryRanks:read'])]
     private ?string $category = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['militaryRanks:read'])]
     private ?string $title = null;
 
     public function getId(): ?int

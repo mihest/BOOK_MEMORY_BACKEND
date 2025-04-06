@@ -61,7 +61,7 @@ class AddToApplicationFormController extends AbstractController
             foreach ($heroAwards as $heroAward)
             {
                 $entityNewThis = new ApplicationFormHeroAward();
-                $entityNewThis->setHeroAward($this->heroAwardRepository->find($heroAward['id']));
+                $entityNewThis->setTitle($heroAward['title']);
                 $entityNewThis->setYearAt($heroAward['yearAt']);
                 $entityNewThis->setDescription($heroAward['description']);
                 $entityNewThis->setApplicationForm($applicationForm);

@@ -77,7 +77,7 @@ use Doctrine\ORM\Mapping as ORM;
                             ],
                             'heroAward' => [
                                 'type' => 'string',
-                                'example' => '[{"id":1,"yearAt":"1945","description":"Орден Победы"},{"id":2,"yearAt":"1946","description":"Медаль"}]',
+                                'example' => '[{"title":1,"yearAt":"1945","description":"Орден Победы"},{"title":2,"yearAt":"1946","description":"Медаль"}]',
                                 'description' => 'JSON-массив объектов с id, yearAt и description',
                             ],
                         ],
@@ -419,7 +419,7 @@ class ApplicationForm
 
         foreach ($heroAwards as $heroAward)
         {
-            $arr[] = "$i) Награда - " . ($heroAward->getHeroAward()?->getTitle() ?? 'Нет');
+            $arr[] = "$i) Награда - " . ($heroAward->getTitle() ?? 'Нет');
             $arr[] = 'Год - ' . ($heroAward->getYearAt() ?? 'Нет');
             $arr[] = 'Описание - ' . ($heroAward->getDescription() ?? 'Нет');
             $i++;
