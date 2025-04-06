@@ -16,6 +16,15 @@ class ApplicationFormImagesRepository extends ServiceEntityRepository
         parent::__construct($registry, ApplicationFormImages::class);
     }
 
+    public function save(ApplicationFormImages $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
     //    /**
     //     * @return ApplicationFormImages[] Returns an array of ApplicationFormImages objects
     //     */

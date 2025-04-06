@@ -2,10 +2,15 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\Get;
 use App\Repository\PersonalDataAcceptRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+#[Get(
+    uriTemplate: 'personal_data_accepts',
+    paginationEnabled: false,
+)]
 #[ORM\Entity(repositoryClass: PersonalDataAcceptRepository::class)]
 class PersonalDataAccept
 {

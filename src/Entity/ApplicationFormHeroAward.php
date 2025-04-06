@@ -14,6 +14,7 @@ class ApplicationFormHeroAward
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
     #[ORM\ManyToOne(inversedBy: 'applicationFormHeroAwards')]
     private ?HeroAward $heroAward = null;
 

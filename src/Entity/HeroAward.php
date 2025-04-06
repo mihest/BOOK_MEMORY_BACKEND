@@ -2,11 +2,18 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\HeroAwardRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
+#[GetCollection(
+    paginationEnabled: false,
+)]
+#[ApiFilter(SearchFilter::class, properties: ['category' => 'exact'])]
 #[ORM\Entity(repositoryClass: HeroAwardRepository::class)]
 class HeroAward
 {
@@ -24,12 +31,17 @@ class HeroAward
     /**
      * @var Collection<int, ApplicationFormHeroAward>
      */
-    #[ORM\OneToMany(targetEntity: ApplicationFormHeroAward::class, mappedBy: 'heroAward')]
+    #[ORM\OneToMany(targetEntity: ApplicationFormHeroAward::class, mappedBy: 'heroAward', cascade: ['all'])]
     private Collection $applicationFormHeroAwards;
 
     public function __construct()
     {
         $this->applicationFormHeroAwards = new ArrayCollection();
+    }
+
+    public function __toString(): string
+    {
+        return (string) $this->title . ' - ' . (string) $this->category;
     }
 
     public function getId(): ?int

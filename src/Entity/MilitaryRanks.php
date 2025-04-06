@@ -2,9 +2,16 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\MilitaryRanksRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+#[GetCollection(
+    paginationEnabled: false,
+)]
+#[ApiFilter(SearchFilter::class, properties: ['category' => 'exact'])]
 #[ORM\Entity(repositoryClass: MilitaryRanksRepository::class)]
 class MilitaryRanks
 {

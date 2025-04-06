@@ -410,4 +410,30 @@ class ApplicationForm
 
         return $this;
     }
+
+    public function getHeroAwardAll(): string
+    {
+        $heroAwards = $this->heroAward;
+        $arr = [];
+        $i = 1;
+
+        foreach ($heroAwards as $heroAward)
+        {
+            $arr[] = "$i) Награда - " . ($heroAward->getHeroAward()?->getTitle() ?? 'Нет');
+            $arr[] = 'Год - ' . ($heroAward->getYearAt() ?? 'Нет');
+            $arr[] = 'Описание - ' . ($heroAward->getDescription() ?? 'Нет');
+            $i++;
+        }
+
+        return implode("\n", $arr);
+    }
+
+    public function getSender(): string
+    {
+        $arr[] = "Фамилия - " . ($this->getSurnameSender() ?? 'Нет');
+        $arr[] = 'Имя - ' . ($this->getNameSender() ?? 'Нет');
+        $arr[] = 'Телефон - ' . ($this->getPhone() ?? 'Нет');
+
+        return implode("\n", $arr);
+    }
 }

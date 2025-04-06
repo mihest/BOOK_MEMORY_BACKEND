@@ -16,6 +16,15 @@ class ApplicationFormHeroAwardRepository extends ServiceEntityRepository
         parent::__construct($registry, ApplicationFormHeroAward::class);
     }
 
+    public function save(ApplicationFormHeroAward $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
     //    /**
     //     * @return ApplicationFormHeroAward[] Returns an array of ApplicationFormHeroAward objects
     //     */

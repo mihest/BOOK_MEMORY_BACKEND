@@ -44,7 +44,8 @@
     "symfony/web-link": "7.*",
     "symfony/yaml": "7.*",
     "twig/extra-bundle": "3.*",
-    "twig/twig": "3.*"
+    "twig/twig": "3.*",
+    "vich/uploader-bundle": "^2.6"
   },
   "config": {
     "allow-plugins": {

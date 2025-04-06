@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\ApplicationForm;
 use App\Entity\HeroAward;
 use App\Entity\MilitaryRanks;
 use App\Entity\PersonalDataAccept;
@@ -48,6 +49,7 @@ class DashboardController extends AbstractDashboardController
     {
         yield MenuItem::linkToCrud('Воинские звания', 'fas fa-list', MilitaryRanks::class);
         yield MenuItem::linkToCrud('Награды героев', 'fas fa-medal', HeroAward::class);
+        yield MenuItem::linkToCrud('Заявки с форм', 'fa fa-calendar', ApplicationForm::class);
 
         if ($this->personalDataAcceptRepository->count([]) === 0) {
             yield MenuItem::linkToCrud('Согласие на обработку персональных данных', 'fa fa-info', PersonalDataAccept::class)

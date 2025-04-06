@@ -16,6 +16,15 @@ class ApplicationFormRepository extends ServiceEntityRepository
         parent::__construct($registry, ApplicationForm::class);
     }
 
+    public function save(ApplicationForm $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
 //    /**
 //     * @return ApplicationForm[] Returns an array of ApplicationForm objects
 //     */

@@ -16,6 +16,15 @@ class ApplicationFormArchiveRepository extends ServiceEntityRepository
         parent::__construct($registry, ApplicationFormArchive::class);
     }
 
+    public function save(ApplicationFormArchive $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
     //    /**
     //     * @return ApplicationFromArchive[] Returns an array of ApplicationFromArchive objects
     //     */
