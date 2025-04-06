@@ -13,7 +13,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[GetCollection(
     paginationEnabled: false,
-    normalizationContext: ['groups' => ['heroAward:read']],
+    order: ['title' => 'ASC'],
+    normalizationContext: ['groups' => ['heroAward:read']]
 )]
 #[ApiFilter(SearchFilter::class, properties: ['category' => 'exact'])]
 #[ORM\Entity(repositoryClass: HeroAwardRepository::class)]

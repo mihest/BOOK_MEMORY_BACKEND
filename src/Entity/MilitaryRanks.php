@@ -11,6 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[GetCollection(
     paginationEnabled: false,
+    order: ['title' => 'ASC'],
     normalizationContext: ['groups' => ['militaryRanks:read']],
 )]
 #[ApiFilter(SearchFilter::class, properties: ['category' => 'exact'])]

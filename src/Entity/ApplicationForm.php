@@ -425,7 +425,7 @@ class ApplicationForm
             $i++;
         }
 
-        return implode("\n", $arr);
+        return implode("<br>", $arr);
     }
 
     public function getSender(): string
@@ -434,6 +434,6 @@ class ApplicationForm
         $arr[] = 'Имя - ' . ($this->getNameSender() ?? 'Нет');
         $arr[] = 'Телефон - ' . ($this->getPhone() ?? 'Нет');
 
-        return implode("\n", $arr);
+        return implode("<br>", $arr);
     }
 }

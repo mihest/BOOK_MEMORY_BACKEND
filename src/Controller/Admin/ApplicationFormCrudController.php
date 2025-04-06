@@ -44,7 +44,8 @@ class ApplicationFormCrudController extends AbstractCrudController
         yield TextField::new('deathDateAt', 'Дата смерти')
             ->setColumns(8);
         yield TextEditorField::new('additional', 'Дополнительные сведения')
-            ->setColumns(8);
+            ->setColumns(8)
+            ->setTemplatePath('/admin/field/text_editor.html.twig');
         yield TextField::new('surnameSender', 'Фамилия отправителя')
             ->onlyOnForms()
             ->setColumns(8);
@@ -58,7 +59,8 @@ class ApplicationFormCrudController extends AbstractCrudController
             ->onlyOnForms()
             ->setColumns(8);
         yield TextEditorField::new('sender', 'Получатель')
-            ->onlyOnIndex();
+            ->onlyOnIndex()
+            ->setTemplatePath('/admin/field/text_editor.html.twig');
 
         yield CollectionField::new('images', 'Избражения')
             ->setRequired(false)
@@ -82,6 +84,7 @@ class ApplicationFormCrudController extends AbstractCrudController
             ->hideOnIndex();
 
         yield TextEditorField::new('heroAwardAll', 'Награды героя')
-            ->onlyOnIndex();
+            ->onlyOnIndex()
+            ->setTemplatePath('/admin/field/text_editor.html.twig');
     }
 }
