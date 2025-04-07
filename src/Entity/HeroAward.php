@@ -47,7 +47,7 @@ class HeroAward
 
     public function __toString(): string
     {
-        return (string) $this->title . ' - ' . (string) $this->category;
+        return (string) $this->title ?? '/' . ' - ' . (string) $this->category ?? '/';
     }
 
     public function getId(): ?int
