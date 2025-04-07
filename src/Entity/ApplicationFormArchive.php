@@ -31,7 +31,7 @@ class ApplicationFormArchive
     private ?ApplicationForm $applicationForm = null;
 
     #[Vich\UploadableField(mapping: 'application_form_media', fileNameProperty: 'media')]
-    #[Assert\Image(mimeTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'])]
+    #[Assert\Image(mimeTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'application/pdf'])]
     private ?File $mediaFile = null;
 
     public function getId(): ?int
