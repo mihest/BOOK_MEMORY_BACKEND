@@ -153,6 +153,9 @@ class ApplicationForm
     #[ORM\OneToMany(targetEntity: ApplicationFormHeroAward::class, mappedBy: 'applicationForm', cascade: ['all'])]
     private Collection $heroAward;
 
+    #[ORM\Column(length: 255)]
+    private ?string $status = null;
+
     public function __construct()
     {
         $this->images = new ArrayCollection();
@@ -435,5 +438,17 @@ class ApplicationForm
         $arr[] = 'Телефон - ' . ($this->getPhone() ?? 'Нет');
 
         return implode("<br>", $arr);
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
+
+        return $this;
     }
 }

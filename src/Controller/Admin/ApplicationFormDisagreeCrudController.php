@@ -3,13 +3,20 @@
 namespace App\Controller\Admin;
 
 use App\Entity\ApplicationForm;
+use Doctrine\ORM\QueryBuilder;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
-class ApplicationFormCrudController extends AbstractCrudController
+class ApplicationFormDisagreeCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {
@@ -25,8 +32,19 @@ class ApplicationFormCrudController extends AbstractCrudController
             ->setPageTitle(Crud::PAGE_EDIT, 'Изменение заявки');
     }
 
+    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): QueryBuilder
+    {
+        $queryBuilder = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+
+        $queryBuilder->andWhere('entity.status = :status')
+            ->setParameter('status', 'Отклонена');
+
+        return $queryBuilder;
+    }
+
     public function configureFields(string $pageName): iterable
     {
+        yield FormField::addTab('Главная');
         yield TextField::new('surname', 'Фамилия')
             ->setColumns(8);
         yield TextField::new('name', 'Имя')
@@ -61,7 +79,18 @@ class ApplicationFormCrudController extends AbstractCrudController
         yield TextEditorField::new('sender', 'Получатель')
             ->onlyOnIndex()
             ->setTemplatePath('/admin/field/text_editor.html.twig');
+        yield ChoiceField::new('status', 'Статус')
+            ->setColumns(8)
+            ->setChoices
+            (
+                [
+                    'Не рассмотрена' => 'Не рассмотрена',
+                    'Принята' => 'Принята',
+                    'Отклонена' => 'Отклонена',
+                ]
+            );
 
+        yield FormField::addTab('Изображения');
         yield CollectionField::new('images', 'Избражения')
             ->setRequired(false)
             ->showEntryLabel(false)
@@ -69,6 +98,7 @@ class ApplicationFormCrudController extends AbstractCrudController
             ->setColumns(8)
             ->hideOnIndex();
 
+        yield FormField::addTab('Архив');
         yield CollectionField::new('archive', 'Архив')
             ->setRequired(false)
             ->showEntryLabel(false)
@@ -76,6 +106,7 @@ class ApplicationFormCrudController extends AbstractCrudController
             ->setColumns(8)
             ->hideOnIndex();
 
+        yield FormField::addTab('Награды героя');
         yield CollectionField::new('heroAward', 'Награды героя')
             ->setRequired(false)
             ->showEntryLabel(false)

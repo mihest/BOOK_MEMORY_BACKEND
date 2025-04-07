@@ -47,9 +47,16 @@ class DashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
+        yield MenuItem::section('Заявки');
+        yield MenuItem::linkToCrud('Заявки с форм "не расмотрена"', 'fa fa-calendar', ApplicationForm::class)
+            ->setController(ApplicationFormWaitingCrudController::class);
+        yield MenuItem::linkToCrud('Заявки с форм "принята"', 'fa fa-calendar', ApplicationForm::class)
+            ->setController(ApplicationFormAgreeCrudController::class);
+        yield MenuItem::linkToCrud('Заявки с форм "отклонена"', 'fa fa-calendar', ApplicationForm::class)
+            ->setController(ApplicationFormDisagreeCrudController::class);
+        yield MenuItem::section('Заполнение');
         yield MenuItem::linkToCrud('Воинские звания', 'fas fa-list', MilitaryRanks::class);
         yield MenuItem::linkToCrud('Награды героев', 'fas fa-medal', HeroAward::class);
-        yield MenuItem::linkToCrud('Заявки с форм', 'fa fa-calendar', ApplicationForm::class);
 
         if ($this->personalDataAcceptRepository->count([]) === 0) {
             yield MenuItem::linkToCrud('Согласие на обработку персональных данных', 'fa fa-info', PersonalDataAccept::class)
