@@ -47,12 +47,12 @@ class DashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::section('Заявки');
-        yield MenuItem::linkToCrud('Заявки с форм "не расмотрена"', 'fa fa-calendar', ApplicationForm::class)
+        yield MenuItem::section('Заявки с формы');
+        yield MenuItem::linkToCrud('Нерассмотренные', 'fa fa-calendar', ApplicationForm::class)
             ->setController(ApplicationFormWaitingCrudController::class);
-        yield MenuItem::linkToCrud('Заявки с форм "принята"', 'fa fa-calendar', ApplicationForm::class)
+        yield MenuItem::linkToCrud('Принятые', 'fa fa-calendar', ApplicationForm::class)
             ->setController(ApplicationFormAgreeCrudController::class);
-        yield MenuItem::linkToCrud('Заявки с форм "отклонена"', 'fa fa-calendar', ApplicationForm::class)
+        yield MenuItem::linkToCrud('Отклоненные', 'fa fa-calendar', ApplicationForm::class)
             ->setController(ApplicationFormDisagreeCrudController::class);
         yield MenuItem::section('Заполнение');
         yield MenuItem::linkToCrud('Воинские звания', 'fas fa-list', MilitaryRanks::class);
