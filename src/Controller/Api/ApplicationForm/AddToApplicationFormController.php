@@ -61,6 +61,11 @@ class AddToApplicationFormController extends AbstractController
 
             foreach ($heroAwards as $heroAward)
             {
+                if ($heroAward['title'] === null && $heroAward['yearAt'] === null && $heroAward['description'] === null)
+                {
+                    continue;
+                }
+
                 $entityNewThis = new ApplicationFormHeroAward();
                 $entityNewThis->setTitle($heroAward['title']);
                 $entityNewThis->setYearAt($heroAward['yearAt']);

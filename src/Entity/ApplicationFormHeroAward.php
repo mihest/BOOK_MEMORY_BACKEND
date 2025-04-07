@@ -27,7 +27,7 @@ class ApplicationFormHeroAward
     #[ORM\ManyToOne(inversedBy: 'heroAward')]
     private ?ApplicationForm $applicationForm = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $title = null;
 
     public function getId(): ?int
@@ -88,7 +88,7 @@ class ApplicationFormHeroAward
         return $this->title;
     }
 
-    public function setTitle(string $title): static
+    public function setTitle(?string $title): static
     {
         $this->title = $title;
 
