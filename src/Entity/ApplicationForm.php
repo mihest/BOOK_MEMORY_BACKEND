@@ -451,4 +451,21 @@ class ApplicationForm
 
         return $this;
     }
+
+    public function getMedia(): string
+    {
+        $arr = [];
+        $i = 1;
+
+        foreach ($this->getArchive() as $value)
+        {
+            $link = 'http://book-memory-new.itlabs.top/media/application_form/' . $value->getMedia();
+
+            $arr[] = "<a href=\"$link\" target=\"_blank\">Медиа - $i</a>";
+
+            $i++;
+        }
+
+        return implode("<br>", $arr);
+    }
 }

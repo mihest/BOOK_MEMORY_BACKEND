@@ -2,10 +2,14 @@
 
 namespace App\Controller\Admin;
 
+use App\Controller\Admin\Field\VichGalleryField;
 use App\Entity\ApplicationForm;
+use App\Repository\ApplicationFormRepository;
 use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
@@ -15,12 +19,18 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class ApplicationFormWaitingCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {
         return ApplicationForm::class;
+    }
+
+    public function __construct(private readonly ApplicationFormRepository $applicationFormRepository,)
+    {
     }
 
     public function configureCrud(Crud $crud): Crud
@@ -40,6 +50,60 @@ class ApplicationFormWaitingCrudController extends AbstractCrudController
             ->setParameter('status', 'Не рассмотрена');
 
         return $queryBuilder;
+    }
+
+    public function configureActions(Actions $actions): Actions
+    {
+        $agree = Action::new('agree', 'Принять')
+            ->linkToCrudAction('agree')
+            ->setCssClass('btn btn-success')
+            ->displayIf(static function ($entity) {
+                return $entity->getStatus() !== 'Принята';
+            });
+
+        $disagree = Action::new('disagree', 'Отклонить')
+            ->linkToCrudAction('disagree')
+            ->setCssClass('btn btn-danger')
+            ->displayIf(static function ($entity) {
+                return $entity->getStatus() !== 'Отклонена';
+            });
+
+        return $actions
+            ->add(Crud::PAGE_DETAIL, $agree)
+            ->add(Crud::PAGE_DETAIL, $disagree)
+            ->add(Crud::PAGE_INDEX, Action::DETAIL);
+    }
+
+    public function agree(AdminUrlGenerator $adminUrlGenerator): RedirectResponse
+    {
+        /** @var ApplicationForm $applicationForm */
+        $applicationForm = $this->getContext()->getEntity()->getInstance();
+        $applicationForm->setStatus('Принята');
+        $this->applicationFormRepository->save($applicationForm, true);
+
+        $url = $adminUrlGenerator
+            ->setController(self::class)
+            ->setAction(Action::DETAIL)
+            ->setEntityId($applicationForm->getId())
+            ->generateUrl();
+
+        return $this->redirect($url);
+    }
+
+    public function disagree(AdminUrlGenerator $adminUrlGenerator): RedirectResponse
+    {
+        /** @var ApplicationForm $applicationForm */
+        $applicationForm = $this->getContext()->getEntity()->getInstance();
+        $applicationForm->setStatus('Отклонена');
+        $this->applicationFormRepository->save($applicationForm, true);
+
+        $url = $adminUrlGenerator
+            ->setController(self::class)
+            ->setAction(Action::DETAIL)
+            ->setEntityId($applicationForm->getId())
+            ->generateUrl();
+
+        return $this->redirect($url);
     }
 
     public function configureFields(string $pageName): iterable
@@ -77,7 +141,7 @@ class ApplicationFormWaitingCrudController extends AbstractCrudController
             ->onlyOnForms()
             ->setColumns(8);
         yield TextEditorField::new('sender', 'Получатель')
-            ->onlyOnIndex()
+            ->hideOnForm()
             ->setTemplatePath('/admin/field/text_editor.html.twig');
         yield ChoiceField::new('status', 'Статус')
             ->setColumns(8)
@@ -96,7 +160,10 @@ class ApplicationFormWaitingCrudController extends AbstractCrudController
             ->showEntryLabel(false)
             ->useEntryCrudForm(ApplicationFormImagesCrudController::class)
             ->setColumns(8)
-            ->hideOnIndex();
+            ->onlyOnForms();
+
+        yield VichGalleryField::new('images.image', 'Избражения')
+            ->onlyOnDetail();
 
         yield FormField::addTab('Архив');
         yield CollectionField::new('archive', 'Архив')
@@ -104,7 +171,12 @@ class ApplicationFormWaitingCrudController extends AbstractCrudController
             ->showEntryLabel(false)
             ->useEntryCrudForm(ApplicationFormArchiveCrudController::class)
             ->setColumns(8)
-            ->hideOnIndex();
+            ->onlyOnForms();
+
+        yield TextField::new('media', 'Архив')
+            ->setColumns(8)
+            ->renderAsHtml()
+            ->onlyOnDetail();
 
         yield FormField::addTab('Награды героя');
         yield CollectionField::new('heroAward', 'Награды героя')
@@ -112,10 +184,10 @@ class ApplicationFormWaitingCrudController extends AbstractCrudController
             ->showEntryLabel(false)
             ->useEntryCrudForm(ApplicationFormHeroAwardCrudController::class)
             ->setColumns(8)
-            ->hideOnIndex();
+            ->onlyOnForms();
 
         yield TextEditorField::new('heroAwardAll', 'Награды героя')
-            ->onlyOnIndex()
+            ->hideOnForm()
             ->setTemplatePath('/admin/field/text_editor.html.twig');
     }
 }
