@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Controller\Api\ApplicationForm\AddToApplicationFormController;
 use App\Entity\Traits\CreatedAtTrait;
@@ -12,6 +15,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use ApiPlatform\OpenApi\Model;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[Post(
     uriTemplate: 'application_forms/add',
@@ -90,6 +94,28 @@ use Doctrine\ORM\Mapping as ORM;
     ),
     deserialize: false
 )]
+#[GetCollection(normalizationContext: ['groups' => ['applicationForm:read']])]
+#[Post(
+    uriTemplate: 'application_forms/edit',
+    controller: AddToApplicationFormController::class,
+    openapi: new Model\Operation(
+        requestBody: new Model\RequestBody(
+            content: new \ArrayObject([
+                'application/json' => [
+                    'schema' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'id' => [
+                                'type' => 'integer',
+                            ],
+                        ],
+                    ]
+                ]
+            ])
+        )
+    ),
+    deserialize: false)]
+#[ApiFilter(SearchFilter::class, properties: ['status' => 'exact'])]
 #[ORM\Entity(repositoryClass: ApplicationFormRepository::class)]
 class ApplicationForm
 {
@@ -99,69 +125,88 @@ class ApplicationForm
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('applicationForm:read')]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('applicationForm:read')]
     private ?string $surname = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('applicationForm:read')]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('applicationForm:read')]
     private ?string $patronymic = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('applicationForm:read')]
     private ?string $militaryRank = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('applicationForm:read')]
     private ?string $birthDateAt = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups('applicationForm:read')]
     private ?string $additional = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('applicationForm:read')]
     private ?string $surnameSender = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('applicationForm:read')]
     private ?string $nameSender = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('applicationForm:read')]
     private ?string $patronymicSender = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('applicationForm:read')]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('applicationForm:read')]
     private ?string $category = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('applicationForm:read')]
     private ?string $deathDateAt = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('applicationForm:read')]
     private ?string $city = null;
 
     /**
      * @var Collection<int, ApplicationFormImages>
      */
     #[ORM\OneToMany(targetEntity: ApplicationFormImages::class, mappedBy: 'applicationForm', cascade: ['all'])]
+    #[Groups('applicationForm:read')]
     private Collection $images;
 
     /**
      * @var Collection<int, ApplicationFormArchive>
      */
     #[ORM\OneToMany(targetEntity: ApplicationFormArchive::class, mappedBy: 'applicationForm', cascade: ['all'])]
+    #[Groups('applicationForm:read')]
     private Collection $archive;
 
     /**
      * @var Collection<int, ApplicationFormHeroAward>
      */
     #[ORM\OneToMany(targetEntity: ApplicationFormHeroAward::class, mappedBy: 'applicationForm', cascade: ['all'])]
+    #[Groups('applicationForm:read')]
     private Collection $heroAward;
 
     #[ORM\Column(length: 255)]
+    #[Groups('applicationForm:read')]
     private ?string $status = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('applicationForm:read')]
     private ?string $institute = null;
 
     public function __construct()

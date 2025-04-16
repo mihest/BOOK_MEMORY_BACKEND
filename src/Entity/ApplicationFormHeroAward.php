@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ApplicationFormHeroAwardRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ApplicationFormHeroAwardRepository::class)]
 class ApplicationFormHeroAward
@@ -12,6 +13,7 @@ class ApplicationFormHeroAward
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('applicationForm:read')]
     private ?int $id = null;
 
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
@@ -19,15 +21,18 @@ class ApplicationFormHeroAward
     private ?HeroAward $heroAward = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('applicationForm:read')]
     private ?string $yearAt = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups('applicationForm:read')]
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'heroAward')]
     private ?ApplicationForm $applicationForm = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('applicationForm:read')]
     private ?string $title = null;
 
     public function getId(): ?int

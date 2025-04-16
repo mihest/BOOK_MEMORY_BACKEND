@@ -8,6 +8,7 @@ use App\Repository\ApplicationFormArchiveRepository;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
@@ -22,9 +23,11 @@ class ApplicationFormArchive
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('applicationForm:read')]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('applicationForm:read')]
     private ?string $media = null;
 
     #[ORM\ManyToOne(inversedBy: 'archive')]
