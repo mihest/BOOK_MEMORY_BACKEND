@@ -161,7 +161,7 @@ class ApplicationForm
     #[ORM\Column(length: 255)]
     private ?string $status = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255)]
     private ?string $institute = null;
 
     public function __construct()
@@ -482,7 +482,7 @@ class ApplicationForm
         return $this->institute;
     }
 
-    public function setInstitute(?string $institute): static
+    public function setInstitute(string $institute): static
     {
         $this->institute = $institute;
 

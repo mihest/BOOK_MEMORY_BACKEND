@@ -49,7 +49,7 @@ class AddToApplicationFormController extends AbstractController
         $applicationForm->setNameSender($data->get('nameSender'));
         $applicationForm->setPatronymicSender($data->get('patronymicSender'));
         $applicationForm->setPhone($data->get('phone'));
-        $applicationForm->setInstitute($data->get('institute'));
+        $applicationForm->setInstitute($data->get('institute') ?? 'Не указано');
         $applicationForm->setStatus('Не рассмотрена');
 
         $this->applicationFormRepository->save($applicationForm, true);

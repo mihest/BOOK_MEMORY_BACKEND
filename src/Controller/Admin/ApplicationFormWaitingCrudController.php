@@ -144,8 +144,8 @@ class ApplicationFormWaitingCrudController extends AbstractCrudController
         yield TextEditorField::new('sender', 'Получатель')
             ->hideOnForm()
             ->setTemplatePath('/admin/field/text_editor.html.twig');
-        yield TextField::new('institute', 'Учреждение')
-            ->hideOnForm();
+        yield TextField::new('institute', 'Организация/Организации')
+            ->setColumns(8);
         yield ChoiceField::new('status', 'Статус')
             ->setColumns(8)
             ->setChoices
