@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\Post;
 use App\Controller\Api\ApplicationForm\AddToApplicationFormController;
+use App\Entity\Traits\CreatedAtTrait;
+use App\Entity\Traits\UpdatedAtTrait;
 use App\Repository\ApplicationFormRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -91,6 +93,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ApplicationFormRepository::class)]
 class ApplicationForm
 {
+    use CreatedAtTrait;
+    use UpdatedAtTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -155,6 +160,9 @@ class ApplicationForm
 
     #[ORM\Column(length: 255)]
     private ?string $status = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $institute = null;
 
     public function __construct()
     {
@@ -467,5 +475,17 @@ class ApplicationForm
         }
 
         return implode("<br>", $arr);
+    }
+
+    public function getInstitute(): ?string
+    {
+        return $this->institute;
+    }
+
+    public function setInstitute(?string $institute): static
+    {
+        $this->institute = $institute;
+
+        return $this;
     }
 }

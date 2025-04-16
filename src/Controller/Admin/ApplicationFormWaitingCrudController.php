@@ -16,6 +16,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
@@ -143,6 +144,8 @@ class ApplicationFormWaitingCrudController extends AbstractCrudController
         yield TextEditorField::new('sender', 'Получатель')
             ->hideOnForm()
             ->setTemplatePath('/admin/field/text_editor.html.twig');
+        yield TextField::new('institute', 'Учреждение')
+            ->hideOnForm();
         yield ChoiceField::new('status', 'Статус')
             ->setColumns(8)
             ->setChoices
@@ -153,6 +156,8 @@ class ApplicationFormWaitingCrudController extends AbstractCrudController
                     'Отклонена' => 'Отклонена',
                 ]
             );
+        yield DateTimeField::new('createdAt', 'Дата создания')
+            ->setColumns(8);
 
         yield FormField::addTab('Изображения');
         yield CollectionField::new('images', 'Избражения')
