@@ -17,10 +17,10 @@ class InstitutionsCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return parent::configureCrud($crud)
-            ->setEntityLabelInPlural('Учреждения')
-            ->setEntityLabelInSingular('учреждение')
-            ->setPageTitle(Crud::PAGE_NEW, 'Добавление учреждения')
-            ->setPageTitle(Crud::PAGE_EDIT, 'Изменение учреждения');
+            ->setEntityLabelInPlural('Организации')
+            ->setEntityLabelInSingular('организацию')
+            ->setPageTitle(Crud::PAGE_NEW, 'Добавление организации')
+            ->setPageTitle(Crud::PAGE_EDIT, 'Изменение организации');
     }
 
     public function configureFields(string $pageName): iterable

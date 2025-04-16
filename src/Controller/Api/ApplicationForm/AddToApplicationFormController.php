@@ -52,6 +52,7 @@ class AddToApplicationFormController extends AbstractController
         $applicationForm->setInstitute($data->get('institute') ?? 'Не указано');
         $applicationForm->setStatus('Не рассмотрена');
         $applicationForm->setCreatedAt(new \DateTime());
+        $applicationForm->setUpdatedAt(new \DateTime());
 
         $this->applicationFormRepository->save($applicationForm, true);
 
