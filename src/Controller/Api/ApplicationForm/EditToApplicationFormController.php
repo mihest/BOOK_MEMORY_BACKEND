@@ -19,13 +19,13 @@ class EditToApplicationFormController extends AbstractController
 
     public function __invoke(Request $request): JsonResponse
     {
-        $data = $request->request;
+        $data = json_decode($request->getContent(), true);
 
-        $applicationForm = $this->applicationFormRepository->find($data->get('id'));
+        $applicationForm = $this->applicationFormRepository->find($data['id']);
 
-        $applicationForm->setStatus($data->get('status'));
-        $applicationForm->setChangedAi($data->get('changedAi'));
-        $applicationForm->setChangedAiDescription($data->get('changedAiDescription'));
+        $applicationForm->setStatus($data['status']);
+        $applicationForm->setChangedAi($data['changedAi']);
+        $applicationForm->setChangedAiDescription($data['changedAiDescription']);
 
         $this->applicationFormRepository->save($applicationForm, true);
 

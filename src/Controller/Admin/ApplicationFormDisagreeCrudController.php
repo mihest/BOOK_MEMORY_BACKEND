@@ -14,6 +14,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
@@ -135,6 +136,12 @@ class ApplicationFormDisagreeCrudController extends AbstractCrudController
 
         yield DateTimeField::new('createdAt', 'Дата создания')
             ->setColumns(8);
+
+        yield BooleanField::new('changedAi', 'Проверено АИ')
+            ->hideOnForm();
+
+        yield TextField::new('changedAiDescription', 'Комментарий АИ проверки')
+            ->hideOnForm();
 
         yield FormField::addTab('Изображения');
         yield CollectionField::new('images', 'Избражения')

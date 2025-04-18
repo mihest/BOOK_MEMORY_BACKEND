@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Controller\Api\ApplicationForm\AddToApplicationFormController;
@@ -129,6 +130,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         )
     ),
     deserialize: false)]
+#[Get]
 #[ApiFilter(SearchFilter::class, properties: ['status' => 'exact'])]
 #[ORM\Entity(repositoryClass: ApplicationFormRepository::class)]
 class ApplicationForm
