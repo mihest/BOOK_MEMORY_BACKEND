@@ -2,7 +2,9 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\AiKeywordBanned;
 use App\Entity\ApplicationForm;
+use App\Entity\Exhibit;
 use App\Entity\HeroAward;
 use App\Entity\Institutions;
 use App\Entity\MilitaryRanks;
@@ -55,10 +57,16 @@ class DashboardController extends AbstractDashboardController
             ->setController(ApplicationFormAgreeCrudController::class);
         yield MenuItem::linkToCrud('Отклоненные', 'fa fa-calendar', ApplicationForm::class)
             ->setController(ApplicationFormDisagreeCrudController::class);
+        yield MenuItem::linkToCrud('Автоматически принятые', 'fa fa-calendar', ApplicationForm::class)
+            ->setController(ApplicationFormAutoAgreeCrudController::class);
+        yield MenuItem::linkToCrud('Автоматически отклонённые', 'fa fa-calendar', ApplicationForm::class)
+            ->setController(ApplicationFormAutoDisagreeCrudController::class);
         yield MenuItem::section('Заполнение');
         yield MenuItem::linkToCrud('Воинские звания', 'fas fa-list', MilitaryRanks::class);
         yield MenuItem::linkToCrud('Награды героев', 'fas fa-medal', HeroAward::class);
         yield MenuItem::linkToCrud('Организации', 'fas fa-list', Institutions::class);
+
+        yield MenuItem::linkToCrud('Слова забаненные нейросетью', 'fa fa-list', AiKeywordBanned::class);
 
         if ($this->personalDataAcceptRepository->count([]) === 0) {
             yield MenuItem::linkToCrud('Согласие на обработку персональных данных', 'fa fa-info', PersonalDataAccept::class)

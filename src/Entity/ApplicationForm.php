@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Controller\Api\ApplicationForm\AddToApplicationFormController;
+use App\Controller\Api\ApplicationForm\EditToApplicationFormController;
 use App\Entity\Traits\CreatedAtTrait;
 use App\Entity\Traits\UpdatedAtTrait;
 use App\Repository\ApplicationFormRepository;
@@ -101,7 +102,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[GetCollection(normalizationContext: ['groups' => ['applicationForm:read']])]
 #[Post(
     uriTemplate: 'application_forms/edit',
-    controller: AddToApplicationFormController::class,
+    controller: EditToApplicationFormController::class,
     openapi: new Model\Operation(
         requestBody: new Model\RequestBody(
             content: new \ArrayObject([
@@ -111,6 +112,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
                         'properties' => [
                             'id' => [
                                 'type' => 'integer',
+                            ],
+                            'changedAi' => [
+                                'type' => 'boolean',
+                            ],
+                            'changedAiDescription' => [
+                                'type' => 'string',
+                            ],
+                            'status' => [
+                                'type' => 'string',
                             ],
                         ],
                     ]
@@ -212,6 +222,14 @@ class ApplicationForm
     #[ORM\Column(length: 255)]
     #[Groups('applicationForm:read')]
     private ?string $institute = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups('applicationForm:read')]
+    private ?bool $changedAi = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups('applicationForm:read')]
+    private ?string $changedAiDescription = null;
 
     public function __construct()
     {
@@ -534,6 +552,30 @@ class ApplicationForm
     public function setInstitute(string $institute): static
     {
         $this->institute = $institute;
+
+        return $this;
+    }
+
+    public function isChangedAi(): ?bool
+    {
+        return $this->changedAi;
+    }
+
+    public function setChangedAi(?bool $changedAi): static
+    {
+        $this->changedAi = $changedAi;
+
+        return $this;
+    }
+
+    public function getChangedAiDescription(): ?string
+    {
+        return $this->changedAiDescription;
+    }
+
+    public function setChangedAiDescription(?string $changedAiDescription): static
+    {
+        $this->changedAiDescription = $changedAiDescription;
 
         return $this;
     }
