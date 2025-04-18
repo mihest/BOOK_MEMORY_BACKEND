@@ -17,6 +17,7 @@ use ApiPlatform\OpenApi\Model;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
+#[ORM\HasLifecycleCallbacks]
 #[Post(
     uriTemplate: 'application_forms/add',
     controller: AddToApplicationFormController::class,
@@ -85,6 +86,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
                                 'type' => 'string',
                                 'example' => '[{"title":1,"yearAt":"1945","description":"Орден Победы"},{"title":2,"yearAt":"1946","description":"Медаль"}]',
                                 'description' => 'JSON-массив объектов с id, yearAt и description',
+                            ],
+                            'institute' => [
+                                'type' => 'string',
                             ],
                         ],
                     ]
