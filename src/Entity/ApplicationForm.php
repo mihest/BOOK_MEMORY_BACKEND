@@ -100,7 +100,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ),
     deserialize: false
 )]
-#[GetCollection(normalizationContext: ['groups' => ['applicationForm:read']])]
+#[GetCollection(order: ['createdAt' => 'DESC'], normalizationContext: ['groups' => ['applicationForm:read']])]
 #[Post(
     uriTemplate: 'application_forms/edit',
     controller: EditToApplicationFormController::class,
