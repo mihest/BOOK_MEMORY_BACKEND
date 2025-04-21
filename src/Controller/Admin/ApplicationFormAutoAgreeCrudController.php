@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Controller\Admin\Field\VichFileField;
 use App\Controller\Admin\Field\VichGalleryField;
 use App\Entity\ApplicationForm;
 use App\Repository\ApplicationFormRepository;
@@ -165,6 +166,9 @@ class ApplicationFormAutoAgreeCrudController extends AbstractCrudController
 
         yield TextField::new('changedAiDescription', 'Комментарий АИ проверки')
             ->hideOnForm();
+
+        yield VichFileField::new('qr', 'qr-Code')
+            ->onlyOnIndex();
 
         yield FormField::addTab('Изображения');
         yield CollectionField::new('images', 'Избражения')

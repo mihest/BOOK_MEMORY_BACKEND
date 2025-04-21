@@ -7,19 +7,23 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\OpenApi\Model;
 use App\Controller\Api\ApplicationForm\AddToApplicationFormController;
 use App\Controller\Api\ApplicationForm\EditToApplicationFormController;
 use App\Entity\Traits\CreatedAtTrait;
 use App\Entity\Traits\UpdatedAtTrait;
 use App\Repository\ApplicationFormRepository;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
-use ApiPlatform\OpenApi\Model;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\HasLifecycleCallbacks]
+#[Vich\Uploadable]
 #[Post(
     uriTemplate: 'application_forms/add',
     controller: AddToApplicationFormController::class,
@@ -232,6 +236,13 @@ class ApplicationForm
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups('applicationForm:read')]
     private ?string $changedAiDescription = null;
+
+    #[Vich\UploadableField(mapping: 'application_form_qr', fileNameProperty: 'qr')]
+    private ?File $qrFile = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('applicationForm:read')]
+    private ?string $qr = null;
 
     public function __construct()
     {
@@ -578,6 +589,33 @@ class ApplicationForm
     public function setChangedAiDescription(?string $changedAiDescription): static
     {
         $this->changedAiDescription = $changedAiDescription;
+
+        return $this;
+    }
+
+    public function getQrFile(): ?File
+    {
+        return $this->qrFile;
+    }
+
+    public function setQrFile(?File $qrFile): self
+    {
+        $this->qrFile = $qrFile;
+        if (null !== $qrFile) {
+            $this->updatedAt = new DateTime();
+        }
+
+        return $this;
+    }
+
+    public function getQr(): ?string
+    {
+        return $this->qr;
+    }
+
+    public function setQr(?string $qr): static
+    {
+        $this->qr = $qr;
 
         return $this;
     }

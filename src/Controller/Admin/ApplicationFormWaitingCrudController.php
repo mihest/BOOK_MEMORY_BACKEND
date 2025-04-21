@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Controller\Admin\Field\VichFileField;
 use App\Controller\Admin\Field\VichGalleryField;
 use App\Entity\ApplicationForm;
 use App\Repository\ApplicationFormRepository;
@@ -162,6 +163,9 @@ class ApplicationFormWaitingCrudController extends AbstractCrudController
 
         yield BooleanField::new('changedAi', 'Проверено АИ')
             ->hideOnForm();
+
+        yield VichFileField::new('qr', 'qr-Code')
+            ->onlyOnIndex();
 
         yield TextField::new('changedAiDescription', 'Комментарий АИ проверки')
             ->hideOnForm();
