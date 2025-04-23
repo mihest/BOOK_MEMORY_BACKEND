@@ -29,6 +29,22 @@ class AddToApplicationFormController extends AbstractController
     public function __invoke(Request $request): JsonResponse
     {
         $data = $request->request;
+        $category = $data->get('category');
+
+        if ($category) {
+            $allowedCategories = [
+                'Герои Великой Отечественной войны',
+                'Труженики тыла',
+                'Герои локальных войн',
+                'Герои - ликвидаторы ЧС',
+                'Герои СВО',
+            ];
+
+            if (!in_array($category, $allowedCategories, true)) {
+                return $this->json('Категорию верно выберите.', 403);
+            }
+        }
+
         $applicationForm = $this->createApplicationForm($data);
         $this->handleHeroAwards($data->get('heroAward'), $applicationForm);
         $this->handleUploads($request, $applicationForm);
