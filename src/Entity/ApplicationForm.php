@@ -168,7 +168,7 @@ class ApplicationForm
     #[Groups('applicationForm:read')]
     private ?string $birthDateAt = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Groups('applicationForm:read')]
     private ?string $additional = null;
 
@@ -243,6 +243,13 @@ class ApplicationForm
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups('applicationForm:read')]
     private ?string $qr = null;
+
+    #[Vich\UploadableField(mapping: 'application_form_pdf', fileNameProperty: 'pdf')]
+    private ?File $pdfFile = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('applicationForm:read')]
+    private ?string $pdf = null;
 
     public function __construct()
     {
@@ -540,23 +547,6 @@ class ApplicationForm
         return $this;
     }
 
-    public function getMedia(): string
-    {
-        $arr = [];
-        $i = 1;
-
-        foreach ($this->getArchive() as $value)
-        {
-            $link = 'http://book-memory-new.itlabs.top/media/application_form/' . $value->getMedia();
-
-            $arr[] = "<a href=\"$link\" target=\"_blank\">Медиа - $i</a>";
-
-            $i++;
-        }
-
-        return implode("<br>", $arr);
-    }
-
     public function getInstitute(): ?string
     {
         return $this->institute;
@@ -616,6 +606,33 @@ class ApplicationForm
     public function setQr(?string $qr): static
     {
         $this->qr = $qr;
+
+        return $this;
+    }
+
+    public function getPdfFile(): ?File
+    {
+        return $this->pdfFile;
+    }
+
+    public function setPdfFile(?File $pdfFile): self
+    {
+        $this->pdfFile = $pdfFile;
+        if (null !== $pdfFile) {
+            $this->updatedAt = new DateTime();
+        }
+
+        return $this;
+    }
+
+    public function getPdf(): ?string
+    {
+        return $this->pdf;
+    }
+
+    public function setPdf(?string $pdf): static
+    {
+        $this->pdf = $pdf;
 
         return $this;
     }

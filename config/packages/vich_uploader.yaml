@@ -14,3 +14,7 @@ vich_uploader:
             uri_prefix: /media/application_form_qr
             upload_destination: '%kernel.project_dir%/public/media/application_form_qr'
             namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+        application_form_pdf:
+            uri_prefix: /media/application_form_pdf
+            upload_destination: '%kernel.project_dir%/public/media/application_form_pdf'
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer

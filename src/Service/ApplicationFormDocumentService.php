@@ -18,55 +18,101 @@ use Endroid\QrCode\Writer\PngWriter;
 readonly class ApplicationFormDocumentService
 {
     public function __construct(
-        private ApplicationFormRepository $applicationFormRepository,) {}
+        private ApplicationFormRepository $applicationFormRepository,
+        private string $projectDir,) {}
 
     public function process(ApplicationForm $form): void
     {
         if ($form->getQr()) {
-            $oldQrPath = "/home/shared-backend/web/book-memory-admin.itlabs.top/public_html/public/media/application_form_qr/" . $form->getQr();
+            $oldQrPath = $this->projectDir . '/public/media/application_form_qr/' . $form->getQr();
             if (file_exists($oldQrPath)) {
                 unlink($oldQrPath);
             }
         }
 
+        if ($form->getPdf()) {
+            $oldPdfPath = $this->projectDir . '/public/media/application_form_pdf/' . $form->getPdf();
+            if (file_exists($oldPdfPath)) {
+                unlink($oldPdfPath);
+            }
+        }
+
         $docxPath = $this->generateDocxFromTemplate($form);
+        $pdfPath = $this->convertDocxToPdf($docxPath);
 
-        $pdfUrl = $this->convertDocxToPdf($docxPath);
-
-        $qrPath = $this->generateQrCode($pdfUrl);
+        $qrPath = $this->generateQrCode($pdfPath['url']);
 
         $form->setQr(basename($qrPath));
         $form->setQrFile(new File($qrPath));
+        $form->setPdf($pdfPath['filename']);
+        $form->setPdfFile(new File($pdfPath['fullPath']));
 
         $this->applicationFormRepository->save($form, true);
     }
 
     private function generateDocxFromTemplate(ApplicationForm $form): string
     {
-        $template = new TemplateProcessor('/home/shared-backend/web/book-memory-admin.itlabs.top/public_html/public/шаблон.docx');
+        $template = new TemplateProcessor($this->projectDir . '/public/шаблон.docx');
 
         $template->setValues([
-            'SURNAME' => $form->getSurname(),
-            'NAME' => $form->getName(),
-            'PATRONYMIC' => $form->getPatronymic(),
-            'YEARSTART' => $form->getBirthDateAt(),
-            'YEAREND' => $form->getDeathDateAt(),
-            'PLACE' => $form->getCity(),
-            'MILITARYRANK' => $form->getMilitaryRank(),
-            'CATEGORY' => $form->getCategory(),
-            'ADDITIONAL' => $form->getAdditional(),
+            'SURNAME' => $form->getSurname() ?? 'Нет данных',
+            'NAME' => $form->getName() ?? 'Нет данных',
+            'PATRONYMIC' => $form->getPatronymic() ?? 'Нет данных',
+            'YEARSTART' => $form->getBirthDateAt() ?? 'Нет данных',
+            'YEAREND' => $form->getDeathDateAt() ?? 'Нет данных',
+            'PLACE' => $form->getCity() ?? 'Нет данных',
+            'MILITARYRANK' => $form->getMilitaryRank() ?? 'Нет данных',
+            'CATEGORY' => $form->getCategory() ?? 'Нет данных',
+            'ADDITIONALDATAFIRST' => $form->getAdditional() ?? 'Нет данных',
+            'AWARDS_BLOCK' => $this->formatAwards($form) ?? 'Нет данных',
         ]);
 
-        $template->setValue('AWARDS_BLOCK', $this->formatAwards($form));
+        $images = $form->getImages();
+        $template->cloneRow('IMAGE', count($images));
+
+        foreach ($images as $i => $image) {
+            $rowIndex = $i + 1;
+            $imagePath = $this->projectDir . '/public/images/application_form/' . $image->getImage();
+
+            if (file_exists($imagePath)) {
+                $template->setImageValue("IMAGE#{$rowIndex}", [
+                    'path' => $imagePath,
+                    'width' => 350,
+                    'height' => 230,
+                    'ratio' => true
+                ]);
+            } else {
+                $template->setValue("IMAGE#{$rowIndex}", 'Изображение не найдено');
+            }
+        }
+
+        $archives = $form->getArchive();
+        $template->cloneRow('ARCHIVE', count($archives));
+
+        foreach ($archives as $i => $archive) {
+            $rowIndex = $i + 1;
+            $archivePath = $this->projectDir . '/public/media/application_form/' . $archive->getMedia();
+
+            if (file_exists($archivePath)) {
+                $template->setImageValue("ARCHIVE#{$rowIndex}", [
+                    'path' => $archivePath,
+                    'width' => 350,
+                    'height' => 230,
+                    'ratio' => true
+                ]);
+            } else {
+                $template->setValue("ARCHIVE#{$rowIndex}", 'Изображение не найдено');
+            }
+        }
 
         $path = tempnam(sys_get_temp_dir(), 'form_') . '.docx';
         $template->saveAs($path);
         return $path;
     }
 
-    private function convertDocxToPdf(string $docxPath): string
+    private function convertDocxToPdf(string $docxPath): array
     {
-        $outputDir = "/home/shared-backend/web/book-memory-admin.itlabs.top/public_html/public/media/application_form_pdf";
+        $outputDir = $this->projectDir . "/public/media/application_form_pdf";
         if (!is_dir($outputDir)) {
             mkdir($outputDir, 0755, true);
         }
@@ -80,7 +126,12 @@ readonly class ApplicationFormDocumentService
             throw new ProcessFailedException($process);
         }
 
-        return 'https://book-memory-admin.itlabs.top/public/media/application_form_pdf/' . basename($docxPath, '.docx') . '.pdf';
+        $pdfFilename = basename($docxPath, '.docx') . '.pdf';
+        return [
+            'filename' => $pdfFilename,
+            'fullPath' => $outputDir . '/' . $pdfFilename,
+            'url' => 'https://book-memory-admin.itlabs.top/public/media/application_form_pdf/' . $pdfFilename
+        ];
     }
 
     private function generateQrCode(string $pdfUrl): string
@@ -97,7 +148,7 @@ readonly class ApplicationFormDocumentService
             backgroundColor: new Color(255, 255, 255),
         );
 
-        $dir = "/home/shared-backend/web/book-memory-admin.itlabs.top/public_html/public/media/application_form_qr";
+        $dir = $this->projectDir . "/public/media/application_form_qr";
         if (!is_dir($dir)) {
             mkdir($dir, 0755, true);
         }
@@ -107,7 +158,7 @@ readonly class ApplicationFormDocumentService
         return $filePath;
     }
 
-    private function formatAwards(ApplicationForm $form): string
+    private function formatAwards(ApplicationForm $form): ?string
     {
         $text = '';
         foreach ($form->getHeroAward() as $award) {
@@ -116,6 +167,6 @@ readonly class ApplicationFormDocumentService
                 $award->getYearAt() ?? 'Год не указан',
                 $award->getDescription() ?? 'Описание отсутствует');
         }
-        return trim($text);
+        return trim($text) === '' ? null : $text;
     }
 }

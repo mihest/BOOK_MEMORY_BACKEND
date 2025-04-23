@@ -49,9 +49,8 @@ trait ApplicationFormFieldsTrait
             ->setColumns(8);
         yield TextField::new('deathDateAt', 'Дата смерти')
             ->setColumns(8);
-        yield TextEditorField::new('additional', 'Дополнительные сведения')
-            ->setColumns(8)
-            ->setTemplatePath('/admin/field/text_editor.html.twig');
+        yield TextField::new('additional', 'Дополнительные сведения')
+            ->setColumns(8);
         yield TextField::new('surnameSender', 'Фамилия отправителя')
             ->onlyOnForms()
             ->setColumns(8);
@@ -82,11 +81,7 @@ trait ApplicationFormFieldsTrait
         yield DateTimeField::new('createdAt', 'Дата создания')
             ->setColumns(8)
             ->hideOnForm();
-        yield BooleanField::new('changedAi', 'Проверено АИ')
-            ->onlyOnDetail();
-        yield TextField::new('changedAiDescription', 'Комментарий АИ проверки')
-            ->hideOnForm();
-        yield VichImageField::new('qr', 'qr-Code')
+        yield VichFileField::new('pdf', 'pdf-File')
             ->onlyOnDetail();
 
         yield FormField::addTab('Изображения');
@@ -118,6 +113,16 @@ trait ApplicationFormFieldsTrait
             ->onlyOnForms();
         yield TextEditorField::new('heroAwardAll', 'Награды героя')
             ->setTemplatePath('/admin/field/text_editor.html.twig')
+            ->onlyOnDetail();
+
+        yield FormField::addTab('Ai');
+        yield BooleanField::new('changedAi', 'Проверено АИ')
+            ->onlyOnDetail();
+        yield TextField::new('changedAiDescription', 'Комментарий АИ проверки')
+            ->hideOnForm();
+
+        yield FormField::addTab('Qr-Code');
+        yield VichImageField::new('qr', 'qr-Code')
             ->onlyOnDetail();
     }
 }
