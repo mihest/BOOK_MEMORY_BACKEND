@@ -50,7 +50,8 @@ trait ApplicationFormFieldsTrait
         yield TextField::new('deathDateAt', 'Дата смерти')
             ->setColumns(8);
         yield TextField::new('additional', 'Дополнительные сведения')
-            ->setColumns(8);
+            ->setColumns(8)
+            ->setTemplatePath('/admin/field/text_editor.html.twig');
         yield TextField::new('surnameSender', 'Фамилия отправителя')
             ->onlyOnForms()
             ->setColumns(8);
@@ -115,13 +116,18 @@ trait ApplicationFormFieldsTrait
             ->setTemplatePath('/admin/field/text_editor.html.twig')
             ->onlyOnDetail();
 
-        yield FormField::addTab('Ai');
+        yield FormField::addTab('Ai')
+            ->hideOnForm()
+            ->hideOnIndex();
         yield BooleanField::new('changedAi', 'Проверено АИ')
             ->onlyOnDetail();
         yield TextField::new('changedAiDescription', 'Комментарий АИ проверки')
-            ->hideOnForm();
+            ->hideOnForm()
+            ->hideOnIndex();
 
-        yield FormField::addTab('Qr-Code');
+        yield FormField::addTab('Qr-Code')
+            ->hideOnForm()
+            ->hideOnIndex();
         yield VichImageField::new('qr', 'qr-Code')
             ->onlyOnDetail();
     }

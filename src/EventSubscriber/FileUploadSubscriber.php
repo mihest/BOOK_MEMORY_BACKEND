@@ -2,6 +2,7 @@
 
 namespace App\EventSubscriber;
 
+use Imagine\Imagick\Imagine;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Event\Event;
@@ -33,29 +34,12 @@ class FileUploadSubscriber implements EventSubscriberInterface
         {
             if ($file instanceof File) {
 
-                if ($file->getMimeType() === 'application/msword') {
-                    $newFilePath = $this->convertDocToDocx($file);
+                if (str_starts_with($file->getMimeType(), 'image/') && $file->getMimeType() !== 'image/webp') {
+                    $newFilePath = $this->convertImageToWebP($file);
                     $this->updateFilePathInObject($object, $fileField, $nameFileField, $newFilePath);
                 }
             }
         }
-    }
-
-    private function convertDocToDocx(File $file): string
-    {
-        $pathInfo = pathinfo($file->getRealPath());
-        $outputDir = $pathInfo['dirname'];
-        $inputPath = $file->getRealPath();
-        $outputPath = $outputDir . '/' . $pathInfo['filename'] . '.docx';
-
-        $command = sprintf('libreoffice --headless --convert-to docx --outdir %s %s', escapeshellarg($outputDir), escapeshellarg($inputPath));
-        exec($command, $output, $resultCode);
-
-        if ($resultCode !== 0 || !file_exists($outputPath)) {
-            throw new \RuntimeException('Ошибка конвертации .doc в .docx');
-        }
-
-        return $outputPath;
     }
 
     private function updateFilePathInObject(object $object, string $fileField, string $nameFileField, string $newFilePath): void
@@ -69,5 +53,22 @@ class FileUploadSubscriber implements EventSubscriberInterface
             $object->$setterMethod($newFile);
             $object->$setterNameMethod(basename($newFilePath));
         }
+    }
+
+    private function convertImageToWebP(File $file): string
+    {
+        $imagine = new Imagine();
+        $image = $imagine->open($file->getRealPath());
+
+        $pathInfo = pathinfo($file->getRealPath());
+        $newFilePath = $pathInfo['dirname'] . '/' . $pathInfo['filename'] . '.webp';
+
+        $image->save($newFilePath, ['format' => 'webp']);
+
+        if (file_exists($file->getRealPath())) {
+            @unlink($file->getRealPath());
+        }
+
+        return $newFilePath;
     }
 }

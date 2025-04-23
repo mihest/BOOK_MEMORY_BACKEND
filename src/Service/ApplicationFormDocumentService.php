@@ -73,14 +73,19 @@ readonly class ApplicationFormDocumentService
         foreach ($images as $i => $image) {
             $rowIndex = $i + 1;
             $imagePath = $this->projectDir . '/public/images/application_form/' . $image->getImage();
-
+            
             if (file_exists($imagePath)) {
+                $docxCompatiblePath = $this->ensureDocxCompatibleImage($imagePath);
                 $template->setImageValue("IMAGE#{$rowIndex}", [
-                    'path' => $imagePath,
+                    'path' => $docxCompatiblePath,
                     'width' => 350,
                     'height' => 230,
                     'ratio' => true
                 ]);
+
+                if ($docxCompatiblePath !== $imagePath) {
+                    @unlink($docxCompatiblePath);
+                }
             } else {
                 $template->setValue("IMAGE#{$rowIndex}", 'Изображение не найдено');
             }
@@ -94,12 +99,17 @@ readonly class ApplicationFormDocumentService
             $archivePath = $this->projectDir . '/public/media/application_form/' . $archive->getMedia();
 
             if (file_exists($archivePath)) {
+                $docxCompatiblePath = $this->ensureDocxCompatibleImage($archivePath);
                 $template->setImageValue("ARCHIVE#{$rowIndex}", [
-                    'path' => $archivePath,
+                    'path' => $docxCompatiblePath,
                     'width' => 350,
                     'height' => 230,
                     'ratio' => true
                 ]);
+
+                if ($docxCompatiblePath !== $archivePath) {
+                    @unlink($docxCompatiblePath);
+                }
             } else {
                 $template->setValue("ARCHIVE#{$rowIndex}", 'Изображение не найдено');
             }
@@ -168,5 +178,21 @@ readonly class ApplicationFormDocumentService
                 $award->getDescription() ?? 'Описание отсутствует');
         }
         return trim($text) === '' ? null : $text;
+    }
+
+    private function ensureDocxCompatibleImage(string $path): string
+    {
+        $info = getimagesize($path);
+        $mime = $info['mime'] ?? '';
+
+        if ($mime === 'image/webp') {
+            $image = imagecreatefromwebp($path);
+            $newPath = sys_get_temp_dir() . '/' . uniqid('img_docx_', true) . '.png';
+            imagepng($image, $newPath);
+            imagedestroy($image);
+            return $newPath;
+        }
+
+        return $path;
     }
 }
