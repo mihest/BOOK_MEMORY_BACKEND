@@ -8,8 +8,12 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\OpenApi\Model;
+use ApiPlatform\OpenApi\Model\Operation;
+use ApiPlatform\OpenApi\Model\Parameter;
 use App\Controller\Api\ApplicationForm\AddToApplicationFormController;
 use App\Controller\Api\ApplicationForm\EditToApplicationFormController;
+use App\Controller\Api\ApplicationForm\FiltersController;
+use App\Controller\Api\ApplicationForm\SearchController;
 use App\Entity\Traits\CreatedAtTrait;
 use App\Entity\Traits\UpdatedAtTrait;
 use App\Repository\ApplicationFormRepository;
@@ -24,6 +28,29 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\HasLifecycleCallbacks]
 #[Vich\Uploadable]
+#[GetCollection(
+    uriTemplate: 'application_forms/filters/get',
+    controller: FiltersController::class,
+    paginationEnabled: false,
+)]
+#[GetCollection(
+    uriTemplate: 'application_form/filters/find',
+    controller: SearchController::class,
+    openapi: new Operation(
+        parameters: [
+            new Parameter(name: 'day',          in: 'query', required: false, schema: ['type' => 'integer']),
+            new Parameter(name: 'month',        in: 'query', required: false, schema: ['type' => 'string']),
+            new Parameter(name: 'year',         in: 'query', required: false, schema: ['type' => 'integer']),
+            new Parameter(name: 'city',         in: 'query', required: false, schema: ['type' => 'string']),
+            new Parameter(name: 'letter',       in: 'query', required: false, schema: ['type' => 'string'],),
+            new Parameter(name: 'militaryRank', in: 'query', required: false, schema: ['type' => 'string']),
+            new Parameter(name: 'name',         in: 'query', required: false, schema: ['type' => 'string'],),
+            new Parameter(name: 'page',         in: 'query', required: false, schema: ['type' => 'integer'],),
+            new Parameter(name: 'itemsPerPage', in: 'query', required: false, schema: ['type' => 'integer'],),
+        ]
+    ),
+    normalizationContext: ['groups' => ['applicationForm:read']]
+)]
 #[Post(
     uriTemplate: 'application_forms/add',
     controller: AddToApplicationFormController::class,
@@ -104,7 +131,6 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
     ),
     deserialize: false
 )]
-#[GetCollection(order: ['createdAt' => 'DESC'], normalizationContext: ['groups' => ['applicationForm:read']])]
 #[Post(
     uriTemplate: 'application_forms/edit',
     controller: EditToApplicationFormController::class,
@@ -135,7 +161,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
     ),
     deserialize: false)]
 #[Get]
-#[ApiFilter(SearchFilter::class, properties: ['status' => 'exact'])]
+#[ApiFilter(SearchFilter::class, properties: ['status' => 'exact', 'category' => 'exact'])]
 #[ORM\Entity(repositoryClass: ApplicationFormRepository::class)]
 class ApplicationForm
 {
