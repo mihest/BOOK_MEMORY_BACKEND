@@ -36,7 +36,6 @@ class FiltersController extends AbstractController
         $days   = [];
         $months = [];
         $years  = [];
-        $cities = [];
         $words  = [];
 
         foreach ($members as $member) {
@@ -57,11 +56,6 @@ class FiltersController extends AbstractController
                 }
             }
 
-            $city = trim((string)$member->getCity());
-            if ($city !== '') {
-                $cities[$city] = true;
-            }
-
             $surname = trim((string)$member->getSurname());
             if ($surname !== '' && $surname !== '-') {
                 $clean = preg_replace('/[^А-Яа-яЁё]/u', '', $surname);
@@ -76,7 +70,6 @@ class FiltersController extends AbstractController
             'days'          => $this->getSortedList($days,   SORT_NUMERIC),
             'months'        => $this->getSortedMonthNamesList($months),
             'years'         => $this->getSortedList($years,  SORT_NUMERIC),
-            'city'          => $this->getSortedList($cities, SORT_LOCALE_STRING),
             'letters'       => $this->getSortedList($words,  SORT_LOCALE_STRING),
             'militaryRanks' => $this->getMilitaryRankTitles(),
         ];
