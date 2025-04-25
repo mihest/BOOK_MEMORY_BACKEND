@@ -10,6 +10,7 @@ use App\Repository\ApplicationFormArchiveRepository;
 use App\Repository\ApplicationFormHeroAwardRepository;
 use App\Repository\ApplicationFormImagesRepository;
 use App\Repository\ApplicationFormRepository;
+use App\Repository\InstitutionsRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,6 +25,7 @@ class AddToApplicationFormController extends AbstractController
         private readonly ApplicationFormImagesRepository $applicationFormImagesRepository,
         private readonly ApplicationFormArchiveRepository $applicationFormArchiveRepository,
         private readonly ApplicationFormHeroAwardRepository $applicationFormHeroAwardRepository,
+        private readonly InstitutionsRepository $institutionsRepository,
     ) {}
 
     public function __invoke(Request $request): JsonResponse
@@ -72,7 +74,16 @@ class AddToApplicationFormController extends AbstractController
         $form->setNameSender($data->get('nameSender'));
         $form->setPatronymicSender($data->get('patronymicSender'));
         $form->setPhone($data->get('phone'));
-        $form->setInstitute($data->get('institute') ?? 'Не указано');
+        $institute = $data->get('institute');
+        if ($institute)
+        {
+            $institution = $this->institutionsRepository->findOneBy(['title' => $institute]);
+            if ($institution) {
+                $institution->setCount($institution->getCount() + 1);
+                $this->institutionsRepository->save($institution, true);
+            }
+        }
+        $form->setInstitute($institute ?? 'Не указано');
         $form->setStatus('Не рассмотрена');
         $form->setCreatedAt(new \DateTime());
         $form->setUpdatedAt(new \DateTime());

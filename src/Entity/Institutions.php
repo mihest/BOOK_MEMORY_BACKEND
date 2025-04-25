@@ -5,7 +5,9 @@ namespace App\Entity;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\InstitutionsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
+#[UniqueEntity(fields: ['title'])]
 #[GetCollection(paginationEnabled: false,
     order: ['title' => 'ASC'],
 )]
@@ -20,6 +22,9 @@ class Institutions
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $count = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -33,6 +38,18 @@ class Institutions
     public function setTitle(string $title): static
     {
         $this->title = $title;
+
+        return $this;
+    }
+
+    public function getCount(): ?int
+    {
+        return $this->count;
+    }
+
+    public function setCount(?int $count): static
+    {
+        $this->count = $count;
 
         return $this;
     }

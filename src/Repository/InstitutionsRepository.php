@@ -16,6 +16,15 @@ class InstitutionsRepository extends ServiceEntityRepository
         parent::__construct($registry, Institutions::class);
     }
 
+    public function save(Institutions $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
     //    /**
     //     * @return Institutions[] Returns an array of Institutions objects
     //     */
