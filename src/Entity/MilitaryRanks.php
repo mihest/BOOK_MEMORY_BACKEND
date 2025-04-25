@@ -7,8 +7,10 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\MilitaryRanksRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 
+#[UniqueEntity(fields: ['title'])]
 #[GetCollection(
     paginationEnabled: false,
     order: ['title' => 'ASC'],

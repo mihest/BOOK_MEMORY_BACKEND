@@ -15,16 +15,19 @@ class SearchController extends AbstractController
     ) {}
 
     public function __invoke(
-        #[MapQueryParameter] ?int    $day          = null,
-        #[MapQueryParameter] ?string $month        = null,
-        #[MapQueryParameter] ?int    $year         = null,
-        #[MapQueryParameter] ?string $city         = null,
-        #[MapQueryParameter] ?string $letter       = null,
-        #[MapQueryParameter] ?string $militaryRank = null,
-        #[MapQueryParameter] ?string $name         = null,
-        #[MapQueryParameter] ?string $category     = null,
-        #[MapQueryParameter] ?int    $page         = 1,
-        #[MapQueryParameter] ?int    $itemsPerPage = 15,
+        #[MapQueryParameter] ?int    $dayStartAt          = null,
+        #[MapQueryParameter] ?string $monthStartAt        = null,
+        #[MapQueryParameter] ?int    $yearStartAt         = null,
+        #[MapQueryParameter] ?int    $dayEndAt            = null,
+        #[MapQueryParameter] ?string $monthEndAt          = null,
+        #[MapQueryParameter] ?int    $yearEndAt           = null,
+        #[MapQueryParameter] ?string $city                = null,
+        #[MapQueryParameter] ?string $letter              = null,
+        #[MapQueryParameter] ?string $militaryRank        = null,
+        #[MapQueryParameter] ?string $name                = null,
+        #[MapQueryParameter] ?string $category            = null,
+        #[MapQueryParameter] ?int    $page                = 1,
+        #[MapQueryParameter] ?int    $itemsPerPage        = 15,
     ): JsonResponse
     {
         $initialLetter = $letter
@@ -35,30 +38,39 @@ class SearchController extends AbstractController
             ? trim($name)
             : null;
 
-        $members = $this->applicationFormRepository->findByFilters(
-            day:          $day,
-            month:        $month,
-            year:         $year,
-            city:         $city,
-            letter:       $initialLetter,
-            militaryRank: $militaryRank,
-            name:         $searchName,
-            category:     $category,
-            page:         $page,
-            itemsPerPage: $itemsPerPage,
+        // Проверяем, переданы ли какие-либо фильтры
+        $noFilters = (
+            $dayStartAt   === null &&
+            $monthStartAt === null &&
+            $yearStartAt  === null &&
+            $dayEndAt     === null &&
+            $monthEndAt   === null &&
+            $yearEndAt    === null &&
+            $city         === null &&
+            $initialLetter=== null &&
+            $militaryRank === null &&
+            $searchName   === null &&
+            $category     === null
         );
 
-        if (
-            $day    === null &&
-            $month  === null &&
-            $year   === null &&
-            $city   === null &&
-            $letter === null &&
-            $militaryRank  === null &&
-            $name   === null &&
-            $category === null
-        ) {
+        if ($noFilters) {
             $members = $this->applicationFormRepository->findAllPaginated($page, $itemsPerPage);
+        } else {
+            $members = $this->applicationFormRepository->findByFilters(
+                dayStartAt:   $dayStartAt,
+                monthStartAt: $monthStartAt,
+                yearStartAt:  $yearStartAt,
+                dayEndAt:     $dayEndAt,
+                monthEndAt:   $monthEndAt,
+                yearEndAt:    $yearEndAt,
+                city:         $city,
+                letter:       $initialLetter,
+                militaryRank: $militaryRank,
+                name:         $searchName,
+                category:     $category,
+                page:         $page,
+                itemsPerPage: $itemsPerPage,
+            );
         }
 
         return $this->json(

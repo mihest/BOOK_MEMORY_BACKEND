@@ -38,9 +38,12 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
     controller: SearchController::class,
     openapi: new Operation(
         parameters: [
-            new Parameter(name: 'day',          in: 'query', required: false, schema: ['type' => 'integer']),
-            new Parameter(name: 'month',        in: 'query', required: false, schema: ['type' => 'string']),
-            new Parameter(name: 'year',         in: 'query', required: false, schema: ['type' => 'integer']),
+            new Parameter(name: 'dayStartAt',          in: 'query', required: false, schema: ['type' => 'integer']),
+            new Parameter(name: 'monthStartAt',        in: 'query', required: false, schema: ['type' => 'string']),
+            new Parameter(name: 'yearStartAt',         in: 'query', required: false, schema: ['type' => 'integer']),
+            new Parameter(name: 'dayEndAt',          in: 'query', required: false, schema: ['type' => 'integer']),
+            new Parameter(name: 'monthEndAt',        in: 'query', required: false, schema: ['type' => 'string']),
+            new Parameter(name: 'yearEndAt',         in: 'query', required: false, schema: ['type' => 'integer']),
             new Parameter(name: 'city',         in: 'query', required: false, schema: ['type' => 'string']),
             new Parameter(name: 'letter',       in: 'query', required: false, schema: ['type' => 'string'],),
             new Parameter(name: 'militaryRank', in: 'query', required: false, schema: ['type' => 'string']),

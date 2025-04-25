@@ -33,9 +33,12 @@ class ApplicationFormRepository extends ServiceEntityRepository
     }
 
     public function findByFilters(
-        ?int    $day,
-        ?string $month,
-        ?int    $year,
+        ?int    $dayStartAt,
+        ?string $monthStartAt,
+        ?int    $yearStartAt,
+        ?int    $dayEndAt,
+        ?string $monthEndAt,
+        ?int    $yearEndAt,
         ?string $city,
         ?string $letter,
         ?string $militaryRank,
@@ -45,23 +48,34 @@ class ApplicationFormRepository extends ServiceEntityRepository
         int     $itemsPerPage
     ): Paginator
     {
-        $qb = $this->createQueryBuilder('m');
+        $qb = $this->createQueryBuilder('m')
+            ->andWhere('m.status = :status')
+            ->setParameter('status', 'Принята');
 
-        if ($day !== null) {
+        if ($dayStartAt !== null) {
             $qb->andWhere(
-                "SUBSTRING(m.birthDateAt, 1, LOCATE(' ', m.birthDateAt) - 1) = :day"
+                "SUBSTRING(m.birthDateAt, 1, LOCATE(' ', m.birthDateAt) - 1) = :dayStart"
             )
-                ->setParameter('day', (string)$day);
+                ->setParameter('dayStart', (string)$dayStartAt);
         }
 
-        if ($month !== null) {
-            $qb->andWhere('m.birthDateAt LIKE :month')
-                ->setParameter('month', '%'.$month.'%');
+        if ($monthStartAt !== null) {
+            $qb->andWhere(
+                "SUBSTRING(
+            m.birthDateAt,
+            LOCATE(' ', m.birthDateAt) + 1,
+            LOCATE(' ', m.birthDateAt, LOCATE(' ', m.birthDateAt) + 1)
+              - LOCATE(' ', m.birthDateAt) - 1
+        ) = :monthStart"
+            )
+                ->setParameter('monthStart', $monthStartAt);
         }
 
-        if ($year !== null) {
-            $qb->andWhere('(m.birthDateAt LIKE :year OR m.deathDateAt LIKE :year)')
-                ->setParameter('year', '%'.$year.'%');
+        if ($yearStartAt !== null) {
+            $qb->andWhere(
+                "SUBSTRING(m.birthDateAt, LENGTH(m.birthDateAt) - 3, 4) = :yearStart"
+            )
+                ->setParameter('yearStart', (string)$yearStartAt);
         }
 
         if ($city !== null) {
@@ -74,7 +88,7 @@ class ApplicationFormRepository extends ServiceEntityRepository
                 ->setParameter('letter', $letter);
         }
 
-        if (null !== $militaryRank) {
+        if ($militaryRank !== null) {
             $qb->andWhere('LOWER(m.militaryRank) LIKE :rank')
                 ->setParameter('rank', '%'.mb_strtolower($militaryRank, 'UTF-8').'%');
         }
@@ -92,14 +106,13 @@ class ApplicationFormRepository extends ServiceEntityRepository
 
         if ($category !== null) {
             $qb->andWhere('LOWER(m.category) = :category')
-                ->setParameter('category', $category);
+                ->setParameter('category', mb_strtolower($category, 'UTF-8'));
         }
 
-        $qb->setFirstResult(($page - 1) * $itemsPerPage)
-            ->setMaxResults($itemsPerPage)
-            ->orderBy('m.createdAt', 'DESC')
-            ->andWhere('m.status = :status')
-            ->setParameter('status', 'Принята');
+        // пагинация и сортировка
+        $qb->orderBy('m.createdAt', 'DESC')
+            ->setFirstResult(($page - 1) * $itemsPerPage)
+            ->setMaxResults($itemsPerPage);
 
         return new Paginator($qb, true);
     }
