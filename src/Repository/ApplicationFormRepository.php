@@ -40,6 +40,7 @@ class ApplicationFormRepository extends ServiceEntityRepository
         ?string $letter,
         ?string $militaryRank,
         ?string $name,
+        ?string $category,
         int     $page,
         int     $itemsPerPage
     ): Paginator
@@ -89,9 +90,16 @@ class ApplicationFormRepository extends ServiceEntityRepository
                 ->setParameter('name', '%'.$name.'%');
         }
 
+        if ($category !== null) {
+            $qb->andWhere('LOWER(m.category) = :category')
+                ->setParameter('category', $category);
+        }
+
         $qb->setFirstResult(($page - 1) * $itemsPerPage)
             ->setMaxResults($itemsPerPage)
-            ->orderBy('m.surname', 'ASC');
+            ->orderBy('m.createdAt', 'DESC')
+            ->andWhere('m.status = :status')
+            ->setParameter('status', 'Принята');
 
         return new Paginator($qb, true);
     }
@@ -104,7 +112,9 @@ class ApplicationFormRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('m')
             ->orderBy('m.createdAt', 'DESC')
             ->setFirstResult(($page - 1) * $itemsPerPage)
-            ->setMaxResults($itemsPerPage);
+            ->setMaxResults($itemsPerPage)
+            ->andWhere('m.status = :status')
+            ->setParameter('status', 'Принята');
 
         return new Paginator($qb, true);
     }

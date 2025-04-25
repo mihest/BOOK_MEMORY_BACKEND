@@ -22,6 +22,7 @@ class SearchController extends AbstractController
         #[MapQueryParameter] ?string $letter       = null,
         #[MapQueryParameter] ?string $militaryRank = null,
         #[MapQueryParameter] ?string $name         = null,
+        #[MapQueryParameter] ?string $category     = null,
         #[MapQueryParameter] ?int    $page         = 1,
         #[MapQueryParameter] ?int    $itemsPerPage = 15,
     ): JsonResponse
@@ -42,6 +43,7 @@ class SearchController extends AbstractController
             letter:       $initialLetter,
             militaryRank: $militaryRank,
             name:         $searchName,
+            category:     $category,
             page:         $page,
             itemsPerPage: $itemsPerPage,
         );
@@ -53,7 +55,8 @@ class SearchController extends AbstractController
             $city   === null &&
             $letter === null &&
             $militaryRank  === null &&
-            $name   === null
+            $name   === null &&
+            $category === null
         ) {
             $members = $this->applicationFormRepository->findAllPaginated($page, $itemsPerPage);
         }

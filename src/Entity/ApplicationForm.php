@@ -45,6 +45,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
             new Parameter(name: 'letter',       in: 'query', required: false, schema: ['type' => 'string'],),
             new Parameter(name: 'militaryRank', in: 'query', required: false, schema: ['type' => 'string']),
             new Parameter(name: 'name',         in: 'query', required: false, schema: ['type' => 'string'],),
+            new Parameter(name: 'category',     in: 'query', required: false, schema: ['type' => 'string'],),
             new Parameter(name: 'page',         in: 'query', required: false, schema: ['type' => 'integer'],),
             new Parameter(name: 'itemsPerPage', in: 'query', required: false, schema: ['type' => 'integer'],),
         ]

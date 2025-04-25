@@ -31,7 +31,7 @@ class FiltersController extends AbstractController
 
     public function __invoke(): JsonResponse
     {
-        $members = $this->applicationFormRepository->findAll();
+        $members = $this->applicationFormRepository->findBy(['status' => 'Принята']);
 
         $days   = [];
         $months = [];
