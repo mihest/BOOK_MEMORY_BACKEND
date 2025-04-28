@@ -164,8 +164,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
         )
     ),
     deserialize: false)]
-#[Get]
-#[ApiFilter(SearchFilter::class, properties: ['status' => 'exact', 'category' => 'exact'])]
+#[Get(normalizationContext: ['groups' => ['applicationForm:read']],)]
 #[ORM\Entity(repositoryClass: ApplicationFormRepository::class)]
 class ApplicationForm
 {
