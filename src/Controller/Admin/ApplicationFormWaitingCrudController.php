@@ -5,6 +5,8 @@ namespace App\Controller\Admin;
 use App\Controller\Admin\Traits\ApplicationFormFieldsTrait;
 use App\Entity\ApplicationForm;
 use App\Repository\ApplicationFormRepository;
+use App\Repository\InstitutionsRepository;
+use App\Service\ApplicationFormApprovalService;
 use App\Service\ApplicationFormDocumentService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -28,8 +30,7 @@ class ApplicationFormWaitingCrudController extends AbstractCrudController
         return ApplicationForm::class;
     }
 
-    public function __construct(private readonly ApplicationFormRepository $applicationFormRepository,
-                                private readonly ApplicationFormDocumentService $applicationFormDocumentService,)
+    public function __construct(private readonly ApplicationFormApprovalService $approvalService,)
     {
     }
 
@@ -76,16 +77,13 @@ class ApplicationFormWaitingCrudController extends AbstractCrudController
 
     public function agree(AdminUrlGenerator $adminUrlGenerator): RedirectResponse
     {
-        /** @var ApplicationForm $applicationForm */
-        $applicationForm = $this->getContext()->getEntity()->getInstance();
-        $applicationForm->setStatus('Принята');
-        $this->applicationFormDocumentService->process($applicationForm);
-        $this->applicationFormRepository->save($applicationForm, true);
+        $form = $this->getContext()->getEntity()->getInstance();
+        $this->approvalService->approve($form);
 
         $url = $adminUrlGenerator
             ->setController(self::class)
             ->setAction(Action::DETAIL)
-            ->setEntityId($applicationForm->getId())
+            ->setEntityId($form->getId())
             ->generateUrl();
 
         return $this->redirect($url);
@@ -93,15 +91,13 @@ class ApplicationFormWaitingCrudController extends AbstractCrudController
 
     public function disagree(AdminUrlGenerator $adminUrlGenerator): RedirectResponse
     {
-        /** @var ApplicationForm $applicationForm */
-        $applicationForm = $this->getContext()->getEntity()->getInstance();
-        $applicationForm->setStatus('Отклонена');
-        $this->applicationFormRepository->save($applicationForm, true);
+        $form = $this->getContext()->getEntity()->getInstance();
+        $this->approvalService->reject($form);
 
         $url = $adminUrlGenerator
             ->setController(self::class)
             ->setAction(Action::DETAIL)
-            ->setEntityId($applicationForm->getId())
+            ->setEntityId($form->getId())
             ->generateUrl();
 
         return $this->redirect($url);

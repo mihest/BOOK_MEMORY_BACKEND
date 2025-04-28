@@ -6,6 +6,7 @@ use App\Controller\Admin\Field\VichGalleryField;
 use App\Controller\Admin\Traits\ApplicationFormFieldsTrait;
 use App\Entity\ApplicationForm;
 use App\Repository\ApplicationFormRepository;
+use App\Service\ApplicationFormApprovalService;
 use App\Service\ApplicationFormDocumentService;
 use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
@@ -35,8 +36,7 @@ class ApplicationFormAgreeCrudController extends AbstractCrudController
         return ApplicationForm::class;
     }
 
-    public function __construct(private readonly ApplicationFormRepository $applicationFormRepository,
-                                private readonly ApplicationFormDocumentService $applicationFormDocumentService,)
+    public function __construct(private readonly ApplicationFormApprovalService $approvalService,)
     {
     }
 
@@ -75,15 +75,13 @@ class ApplicationFormAgreeCrudController extends AbstractCrudController
 
     public function disagree(AdminUrlGenerator $adminUrlGenerator): RedirectResponse
     {
-        /** @var ApplicationForm $applicationForm */
-        $applicationForm = $this->getContext()->getEntity()->getInstance();
-        $applicationForm->setStatus('Отклонена');
-        $this->applicationFormRepository->save($applicationForm, true);
+        $form = $this->getContext()->getEntity()->getInstance();
+        $this->approvalService->reject($form);
 
         $url = $adminUrlGenerator
             ->setController(self::class)
             ->setAction(Action::DETAIL)
-            ->setEntityId($applicationForm->getId())
+            ->setEntityId($form->getId())
             ->generateUrl();
 
         return $this->redirect($url);

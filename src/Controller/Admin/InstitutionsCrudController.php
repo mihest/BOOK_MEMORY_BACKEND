@@ -56,6 +56,9 @@ class InstitutionsCrudController extends AbstractCrudController
 
         yield IntegerField::new('count', 'Количество')
             ->setColumns(8);
+
+        yield IntegerField::new('countAccepts', 'Количество принятых')
+            ->setColumns(8);
     }
 
     /**

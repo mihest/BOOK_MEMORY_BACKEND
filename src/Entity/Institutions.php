@@ -25,6 +25,9 @@ class Institutions
     #[ORM\Column(nullable: true)]
     private ?int $count = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $countAccepts = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -50,6 +53,18 @@ class Institutions
     public function setCount(?int $count): static
     {
         $this->count = $count;
+
+        return $this;
+    }
+
+    public function getCountAccepts(): ?int
+    {
+        return $this->countAccepts;
+    }
+
+    public function setCountAccepts(?int $countAccepts): static
+    {
+        $this->countAccepts = $countAccepts;
 
         return $this;
     }
