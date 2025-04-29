@@ -6,10 +6,11 @@ use App\Repository\ApplicationFormRepository;
 use App\Repository\MilitaryRanksRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 
 class FiltersController extends AbstractController
 {
-    private const MONTH_MAP = [
+    private const array MONTH_MAP = [
         'Январь'   => 1,
         'Февраль'  => 2,
         'Март'     => 3,
@@ -29,24 +30,14 @@ class FiltersController extends AbstractController
         private readonly MilitaryRanksRepository  $militaryRanksRepository,
     ) {}
 
-    public function __invoke(): JsonResponse
+    public function __invoke(#[MapQueryParameter] ?string $category            = null,): JsonResponse
     {
-        // Получаем всех принятых участников
-        $members = $this->applicationFormRepository->findBy(['status' => 'Принята']);
-
-        // Фильтры для дат рождения/смерти
-        $birthDays   = [];
-        $birthMonths = [];
-        $birthYears  = [];
-        $deathDays   = [];
-        $deathMonths = [];
-        $deathYears  = [];
+        $members = $this->applicationFormRepository->findBy(['status' => 'Принята', 'category' => $category]);
 
         $letters        = [];
         $usedRankTitles = [];
 
         foreach ($members as $member) {
-            // Данные рождения и смерти
             foreach (['birth' => $member->getBirthDateAt(), 'death' => $member->getDeathDateAt()] as $type => $dateStr) {
                 if (!$dateStr) {
                     continue;
@@ -63,7 +54,6 @@ class FiltersController extends AbstractController
                 }
             }
 
-            // Первая буква фамилии
             $surname = trim((string)$member->getSurname());
             if ($surname !== '' && $surname !== '-') {
                 $clean = preg_replace('/[^А-Яа-яЁё]/u', '', $surname);
@@ -73,14 +63,12 @@ class FiltersController extends AbstractController
                 }
             }
 
-            // Строковое звание
             $rankString = trim((string)$member->getMilitaryRank());
             if ($rankString !== '') {
                 $usedRankTitles[$rankString] = true;
             }
         }
 
-        // Получаем и фильтруем звания из репозитория
         $allRanks = $this->militaryRanksRepository->findAll();
         $titles   = [];
         foreach ($allRanks as $rank) {
@@ -91,18 +79,7 @@ class FiltersController extends AbstractController
         }
         sort($titles, SORT_LOCALE_STRING);
 
-        // Формируем ответ
         $response = [
-            'birth' => [
-                'days'   => $this->getSortedList($birthDays,   SORT_NUMERIC),
-                'months' => $this->getSortedMonthNamesList($birthMonths),
-                'years'  => $this->getSortedList($birthYears,  SORT_NUMERIC),
-            ],
-            'death' => [
-                'days'   => $this->getSortedList($deathDays,   SORT_NUMERIC),
-                'months' => $this->getSortedMonthNamesList($deathMonths),
-                'years'  => $this->getSortedList($deathYears,  SORT_NUMERIC),
-            ],
             'letters'       => $this->getSortedList($letters,        SORT_LOCALE_STRING),
             'militaryRanks' => $titles,
         ];
@@ -118,25 +95,5 @@ class FiltersController extends AbstractController
         $values = array_keys($items);
         sort($values, $sortFlag);
         return $values;
-    }
-
-    /**
-     * Возвращает отсортированный список названий месяцев на основе числовых ключей.
-     */
-    private function getSortedMonthNamesList(array $monthNumbers): array
-    {
-        $numbers = array_keys($monthNumbers);
-        sort($numbers, SORT_NUMERIC);
-
-        $flip = array_flip(self::MONTH_MAP);
-        $names = [];
-
-        foreach ($numbers as $num) {
-            if (isset($flip[$num])) {
-                $names[] = $flip[$num];
-            }
-        }
-
-        return $names;
     }
 }

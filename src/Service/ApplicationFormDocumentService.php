@@ -76,6 +76,10 @@ readonly class ApplicationFormDocumentService
             
             if (file_exists($imagePath)) {
                 $docxCompatiblePath = $this->ensureDocxCompatibleImage($imagePath);
+                if ($docxCompatiblePath === null)
+                {
+                    continue;
+                }
                 $template->setImageValue("IMAGE#{$rowIndex}", [
                     'path' => $docxCompatiblePath,
                     'width' => 350,
@@ -100,6 +104,10 @@ readonly class ApplicationFormDocumentService
 
             if (file_exists($archivePath)) {
                 $docxCompatiblePath = $this->ensureDocxCompatibleImage($archivePath);
+                if ($docxCompatiblePath === null)
+                {
+                    continue;
+                }
                 $template->setImageValue("ARCHIVE#{$rowIndex}", [
                     'path' => $docxCompatiblePath,
                     'width' => 350,
@@ -180,8 +188,12 @@ readonly class ApplicationFormDocumentService
         return trim($text) === '' ? null : $text;
     }
 
-    private function ensureDocxCompatibleImage(string $path): string
+    private function ensureDocxCompatibleImage(string $path): string | null
     {
+        if (!is_file($path)) {
+            return null;
+        }
+
         $info = getimagesize($path);
         $mime = $info['mime'] ?? '';
 

@@ -24,7 +24,7 @@ trait ApplicationFormFieldsTrait
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance->getStatus() === 'Принята') {
-            $this->applicationFormDocumentService->process($entityInstance);
+            $entityInstance->setStatus('Не рассмотрена');
         }
 
         parent::updateEntity($entityManager, $entityInstance);
@@ -78,7 +78,7 @@ trait ApplicationFormFieldsTrait
                 'Автоматически принята' => 'Автоматически принята',
                 'Автоматически отклонена' => 'Автоматически отклонена',
             ])
-            ->onlyOnForms();
+            ->onlyOnDetail();
         yield DateTimeField::new('createdAt', 'Дата создания')
             ->setColumns(8)
             ->hideOnForm();

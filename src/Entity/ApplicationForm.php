@@ -31,6 +31,11 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[GetCollection(
     uriTemplate: 'application_forms/filters/get',
     controller: FiltersController::class,
+    openapi: new Operation(
+        parameters: [
+            new Parameter(name: 'category',     in: 'query', required: true, schema: ['type' => 'string'],),
+        ]
+    ),
     paginationEnabled: false,
 )]
 #[GetCollection(
@@ -38,12 +43,6 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
     controller: SearchController::class,
     openapi: new Operation(
         parameters: [
-            new Parameter(name: 'dayStartAt',          in: 'query', required: false, schema: ['type' => 'integer']),
-            new Parameter(name: 'monthStartAt',        in: 'query', required: false, schema: ['type' => 'string']),
-            new Parameter(name: 'yearStartAt',         in: 'query', required: false, schema: ['type' => 'integer']),
-            new Parameter(name: 'dayEndAt',          in: 'query', required: false, schema: ['type' => 'integer']),
-            new Parameter(name: 'monthEndAt',        in: 'query', required: false, schema: ['type' => 'string']),
-            new Parameter(name: 'yearEndAt',         in: 'query', required: false, schema: ['type' => 'integer']),
             new Parameter(name: 'city',         in: 'query', required: false, schema: ['type' => 'string']),
             new Parameter(name: 'letter',       in: 'query', required: false, schema: ['type' => 'string'],),
             new Parameter(name: 'militaryRank', in: 'query', required: false, schema: ['type' => 'string']),
@@ -165,6 +164,8 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
     ),
     deserialize: false)]
 #[Get(normalizationContext: ['groups' => ['applicationForm:read']],)]
+#[GetCollection(normalizationContext: ['groups' => ['applicationForm:read']])]
+#[ApiFilter(SearchFilter::class, properties: ['status' => 'exact'])]
 #[ORM\Entity(repositoryClass: ApplicationFormRepository::class)]
 class ApplicationForm
 {

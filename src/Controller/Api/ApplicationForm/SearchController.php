@@ -15,12 +15,6 @@ class SearchController extends AbstractController
     ) {}
 
     public function __invoke(
-        #[MapQueryParameter] ?int    $dayStartAt          = null,
-        #[MapQueryParameter] ?string $monthStartAt        = null,
-        #[MapQueryParameter] ?int    $yearStartAt         = null,
-        #[MapQueryParameter] ?int    $dayEndAt            = null,
-        #[MapQueryParameter] ?string $monthEndAt          = null,
-        #[MapQueryParameter] ?int    $yearEndAt           = null,
         #[MapQueryParameter] ?string $city                = null,
         #[MapQueryParameter] ?string $letter              = null,
         #[MapQueryParameter] ?string $militaryRank        = null,
@@ -38,14 +32,7 @@ class SearchController extends AbstractController
             ? trim($name)
             : null;
 
-        // Проверяем, переданы ли какие-либо фильтры
         $noFilters = (
-            $dayStartAt   === null &&
-            $monthStartAt === null &&
-            $yearStartAt  === null &&
-            $dayEndAt     === null &&
-            $monthEndAt   === null &&
-            $yearEndAt    === null &&
             $city         === null &&
             $initialLetter=== null &&
             $militaryRank === null &&
@@ -57,12 +44,6 @@ class SearchController extends AbstractController
             $members = $this->applicationFormRepository->findAllPaginated($page, $itemsPerPage);
         } else {
             $members = $this->applicationFormRepository->findByFilters(
-                dayStartAt:   $dayStartAt,
-                monthStartAt: $monthStartAt,
-                yearStartAt:  $yearStartAt,
-                dayEndAt:     $dayEndAt,
-                monthEndAt:   $monthEndAt,
-                yearEndAt:    $yearEndAt,
                 city:         $city,
                 letter:       $initialLetter,
                 militaryRank: $militaryRank,

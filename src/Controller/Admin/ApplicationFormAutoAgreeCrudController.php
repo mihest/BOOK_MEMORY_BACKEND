@@ -29,7 +29,8 @@ class ApplicationFormAutoAgreeCrudController extends AbstractCrudController
         return ApplicationForm::class;
     }
 
-    public function __construct(private readonly ApplicationFormApprovalService $approvalService,)
+    public function __construct(private readonly ApplicationFormApprovalService $approvalService,
+                                private readonly ApplicationFormDocumentService $applicationFormDocumentService,)
     {
     }
 
