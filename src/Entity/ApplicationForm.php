@@ -198,7 +198,7 @@ class ApplicationForm
     #[Groups('applicationForm:read')]
     private ?string $birthDateAt = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types:: TEXT, nullable: true)]
     #[Groups('applicationForm:read')]
     private ?string $additional = null;
 
