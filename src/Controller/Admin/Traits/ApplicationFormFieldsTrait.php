@@ -49,7 +49,7 @@ trait ApplicationFormFieldsTrait
             ->setColumns(8);
         yield TextField::new('deathDateAt', 'Дата смерти')
             ->setColumns(8);
-        yield TextField::new('additional', 'Дополнительные сведения')
+        yield TextField::new('additional', 'Доп. сведения')
             ->setColumns(8)
             ->setTemplatePath('/admin/field/text_editor.html.twig');
         yield TextField::new('surnameSender', 'Фамилия отправителя')

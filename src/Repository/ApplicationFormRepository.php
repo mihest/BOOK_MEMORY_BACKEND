@@ -28,7 +28,7 @@ class ApplicationFormRepository extends ServiceEntityRepository
 
     public function findByFilters(
         ?string $city,
-        ?string $letter,
+        ?array $letters,
         ?string $militaryRank,
         ?string $name,
         ?string $category,
@@ -42,9 +42,9 @@ class ApplicationFormRepository extends ServiceEntityRepository
             $qb->andWhere('LOWER(m.city) LIKE :city')
                 ->setParameter('city', '%' . mb_strtolower($city, 'UTF-8') . '%');
         }
-        if ($letter !== null) {
-            $qb->andWhere('UPPER(SUBSTRING(m.surname, 1, 1)) = :letter')
-                ->setParameter('letter', mb_strtoupper($letter, 'UTF-8'));
+        if ($letters !== null && count($letters) > 0) {
+            $qb->andWhere('UPPER(SUBSTRING(m.surname, 1, 1)) IN (:letters)')
+                ->setParameter('letters', $letters);
         }
         if ($militaryRank !== null) {
             $qb->andWhere('LOWER(m.militaryRank) LIKE :rank')

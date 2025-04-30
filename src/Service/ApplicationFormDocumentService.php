@@ -42,10 +42,15 @@ readonly class ApplicationFormDocumentService
 
         $qrPath = $this->generateQrCode($pdfPath['url']);
 
-        $form->setQr(basename($qrPath));
-        $form->setQrFile(new File($qrPath));
-        $form->setPdf($pdfPath['filename']);
-        $form->setPdfFile(new File($pdfPath['fullPath']));
+        if (file_exists($qrPath)) {
+            $form->setQr(basename($qrPath));
+            $form->setQrFile(new File($qrPath));
+        }
+
+        if (file_exists($pdfPath['fullPath'])) {
+            $form->setPdf($pdfPath['filename']);
+            $form->setPdfFile(new File($pdfPath['fullPath']));
+        }
 
         $this->applicationFormRepository->save($form, true);
     }
@@ -102,7 +107,7 @@ readonly class ApplicationFormDocumentService
             $rowIndex = $i + 1;
             $archivePath = $this->projectDir . '/public/media/application_form/' . $archive->getMedia();
 
-            if (file_exists($archivePath)) {
+            if (file_exists($archivePath) && !str_contains($archivePath, '.pdf')) {
                 $docxCompatiblePath = $this->ensureDocxCompatibleImage($archivePath);
                 if ($docxCompatiblePath === null)
                 {

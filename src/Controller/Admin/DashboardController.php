@@ -17,8 +17,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 class DashboardController extends AbstractDashboardController
 {
@@ -80,5 +85,55 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToUrl('API', 'fa fa-link', '/api')->setLinkTarget('_blank')
             ->setPermission('ROLE_ADMIN');
 
+        yield MenuItem::linkToRoute(
+            'Запустить Backup',
+            'fas fa-database',
+            'admin_run_backup'
+        )->setPermission('ROLE_ADMIN');
+
+    }
+
+    #[Route('/admin/run-backup', name: 'admin_run_backup')]
+    public function runBackup(): Response
+    {
+        $projectDir = $this->getParameter('kernel.project_dir');
+
+        $dateTime    = new \DateTime();
+        $filename    = $dateTime->format('Y-m-d_H-i-s') . '.zip';
+        $outputFile  = $projectDir . '/var/backups/' . $filename;
+
+        if (!is_dir(dirname($outputFile))) {
+            mkdir(dirname($outputFile), 0755, true);
+        }
+
+        $process = new Process([
+            'php',
+            $projectDir . '/bin/console',
+            'app:backup',
+            '--db-host=127.0.0.1',
+            '--db-user=shared-backend_book-memory-admin',
+            '--db-pass=Qwertyy1AAsdgsdgsdf',
+            '--db-name=shared-backend_book-memory-admin',
+            '--output=' . $outputFile,
+            'public'
+        ]);
+
+        $process->setWorkingDirectory($projectDir);
+        $process->setTimeout(3600);
+
+        try {
+            $process->mustRun();
+
+            $response = new BinaryFileResponse($outputFile);
+            $response->setContentDisposition(
+                ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                $filename
+            );
+
+            return $response;
+        } catch (ProcessFailedException $e) {
+            $this->addFlash('danger', 'Ошибка при бэкапе: ' . $e->getMessage());
+            return $this->redirectToRoute('admin');
+        }
     }
 }

@@ -4,6 +4,8 @@ namespace App\Controller\Admin;
 
 use App\Entity\AiKeywordBanned;
 use App\Repository\AiKeywordBannedRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
@@ -18,13 +20,16 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class AiKeywordBannedCrudController extends AbstractCrudController
 {
+    private const int BATCH_SIZE = 50;
+
     public static function getEntityFqcn(): string
     {
         return AiKeywordBanned::class;
     }
 
     public function __construct(private readonly AiKeywordBannedRepository $aiKeywordBannedRepository,
-                                private readonly HttpClientInterface $httpClient)
+                                private readonly HttpClientInterface $httpClient,
+                                private readonly EntityManagerInterface $entityManager)
     {
     }
 
@@ -86,49 +91,75 @@ class AiKeywordBannedCrudController extends AbstractCrudController
     #[Route(path: '/admin/ai-keyword-banned/import-popup', name: 'ai_keyword_banned_import_popup', methods: ['POST'])]
     public function importPopup(Request $request): Response
     {
-        $repo = $this->aiKeywordBannedRepository;
         $file = $request->files->get('file');
-        if ($file && $file->isValid()) {
-
-            foreach ($repo->findAll() as $item) {
-                $repo->remove($item, true);
-            }
-
-            $this->httpClient->request('DELETE', 'http://94.181.95.94:5005/api/v1/text/remove-all-words');
-
-            $lines = file($file->getRealPath(), FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-
-            $words = array_map('trim', $lines);
-            $words = array_filter($words, fn($word) => $word !== '');
-            $words = array_map('mb_strtolower', $words);
-
-            $words = array_unique($words);
-
-            foreach ($words as $word) {
-                $entity = new AiKeywordBanned();
-                $entity->setTitle($word);
-                $repo->save($entity, true);
-            }
-
-            if ($words) {
-                $response = $this->httpClient->request('POST', 'http://94.181.95.94:5005/api/v1/text/add-words', [
-                    'json' => ['words' => $words],
-                ]);
-                $status = $response->getStatusCode();
-
-                if ($status >= 200 && $status < 300) {
-                    $this->addFlash('success', 'Слова успешно импортированы и в админку, и в API!');
-                } else {
-                    $this->addFlash('danger', 'Ошибка при отправке слов в API (код ' . $status . ')');
-                }
-            } else {
-                $this->addFlash('warning', 'Нет слов для импорта.');
-            }
-        } else {
+        if (!$file || !$file->isValid()) {
             $this->addFlash('danger', 'Ошибка при загрузке файла.');
+            return $this->redirect($request->headers->get('referer') ?? '/admin');
         }
 
-        return $this->redirect($request->headers->get('referer') ?? '/admin?crudControllerFqcn=' . urlencode(self::class));
+        // Батчевое удаление существующих записей через итерацию
+        $query = $this->entityManager
+            ->createQueryBuilder()
+            ->select('e')
+            ->from(AiKeywordBanned::class, 'e')
+            ->getQuery();
+
+        /** @var \Generator<AiKeywordBanned> $iterable */
+        $iterable = $query->toIterable([], Query::HYDRATE_OBJECT);
+        $i = 0;
+        foreach ($iterable as $item) {
+            $this->entityManager->remove($item);
+            if ((++$i % self::BATCH_SIZE) === 0) {
+                $this->entityManager->flush();
+                $this->entityManager->clear();
+            }
+        }
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+
+        // Очищаем внешний API
+        $this->httpClient->request('DELETE', 'http://94.181.95.94:5005/api/v1/text/remove-all-words');
+
+        // Читаем и обрабатываем слова
+        $lines = file($file->getRealPath(), FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $words = array_unique(
+            array_filter(
+                array_map('mb_strtolower', array_map('trim', $lines))
+            )
+        );
+
+        if (empty($words)) {
+            $this->addFlash('warning', 'Нет слов для импорта.');
+            return $this->redirect($request->headers->get('referer') ?? '/admin');
+        }
+
+        // Батчевый импорт новых слов
+        $i = 0;
+        foreach ($words as $word) {
+            $entity = new AiKeywordBanned();
+            $entity->setTitle($word);
+            $this->entityManager->persist($entity);
+
+            if ((++$i % self::BATCH_SIZE) === 0) {
+                $this->entityManager->flush();
+                $this->entityManager->clear();
+            }
+        }
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+
+        // Отправляем слова во внешний API
+        $response = $this->httpClient->request('POST', 'http://94.181.95.94:5005/api/v1/text/add-words', [
+            'json' => ['words' => array_values($words)],
+        ]);
+
+        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+            $this->addFlash('success', 'Слова успешно импортированы в админку и в API!');
+        } else {
+            $this->addFlash('danger', 'Ошибка при отправке слов в API (код ' . $response->getStatusCode() . ')');
+        }
+
+        return $this->redirect($request->headers->get('referer') ?? '/admin');
     }
 
     public function export(): Response

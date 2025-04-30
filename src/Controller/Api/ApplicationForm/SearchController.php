@@ -24,8 +24,11 @@ class SearchController extends AbstractController
         #[MapQueryParameter] ?int    $itemsPerPage        = 15,
     ): JsonResponse
     {
-        $initialLetter = $letter
-            ? mb_strtoupper(mb_substr(trim($letter), 0, 1, 'UTF-8'), 'UTF-8')
+        $initialLetters = $letter
+            ? array_map(
+                fn($l) => mb_strtoupper(trim($l), 'UTF-8'),
+                explode(',', $letter)
+            )
             : null;
 
         $searchName = $name
@@ -34,7 +37,7 @@ class SearchController extends AbstractController
 
         $noFilters = (
             $city         === null &&
-            $initialLetter=== null &&
+            $initialLetters === null &&
             $militaryRank === null &&
             $searchName   === null &&
             $category     === null
@@ -45,7 +48,7 @@ class SearchController extends AbstractController
         } else {
             $members = $this->applicationFormRepository->findByFilters(
                 city:         $city,
-                letter:       $initialLetter,
+                letters:      $initialLetters,
                 militaryRank: $militaryRank,
                 name:         $searchName,
                 category:     $category,

@@ -30,7 +30,8 @@ class ApplicationFormAutoAgreeCrudController extends AbstractCrudController
     }
 
     public function __construct(private readonly ApplicationFormApprovalService $approvalService,
-                                private readonly ApplicationFormDocumentService $applicationFormDocumentService,)
+                                private readonly ApplicationFormDocumentService $applicationFormDocumentService,
+                                private readonly ApplicationFormRepository $applicationFormRepository,)
     {
     }
 

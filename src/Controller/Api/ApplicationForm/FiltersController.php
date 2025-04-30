@@ -69,7 +69,7 @@ class FiltersController extends AbstractController
             }
         }
 
-        $allRanks = $this->militaryRanksRepository->findAll();
+        $allRanks = $this->militaryRanksRepository->findBy(['category' => $category]);
         $titles   = [];
         foreach ($allRanks as $rank) {
             $title = trim((string)$rank->getTitle());
