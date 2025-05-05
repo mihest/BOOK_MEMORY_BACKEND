@@ -49,7 +49,8 @@
     "symfony/yaml": "7.*",
     "twig/extra-bundle": "3.*",
     "twig/twig": "3.*",
-    "vich/uploader-bundle": "^2.6"
+    "vich/uploader-bundle": "^2.6",
+    "ext-ssh2": "*"
   },
   "config": {
     "allow-plugins": {
