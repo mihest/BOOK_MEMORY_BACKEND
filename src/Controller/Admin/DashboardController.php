@@ -17,7 +17,9 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -93,6 +95,11 @@ class DashboardController extends AbstractDashboardController
             'admin_export_archive'
         )->setPermission('ROLE_ADMIN');
 
+        yield MenuItem::linkToRoute(
+            'Импортировать архив',
+            'fas fa-upload',
+            'admin_import_archive'
+        )->setPermission('ROLE_ADMIN');
     }
 
     #[Route('/admin/export-archive', name: 'admin_export_archive')]
@@ -160,5 +167,94 @@ class DashboardController extends AbstractDashboardController
         );
 
         return $response;
+    }
+
+    #[Route('/admin/import-archive', name: 'admin_import_archive')]
+    public function importArchive(): Response
+    {
+        return $this->render('admin/field/import_archive.html.twig');
+    }
+
+    #[Route('/admin/handle-import-archive', name: 'admin_handle_import_archive', methods: ['POST'])]
+    public function handleImportArchive(Request $request): Response
+    {
+        $uploadedFile = $request->files->get('archive');
+        if (!$uploadedFile || $uploadedFile->getClientOriginalExtension() !== 'zip') {
+            return new Response('❌ Неверный формат файла. Требуется .zip', 400);
+        }
+
+        $projectDir = $this->getParameter('kernel.project_dir');
+        $tmpDir = $projectDir . '/var/tmp_import';
+        if (!is_dir($tmpDir)) {
+            mkdir($tmpDir, 0755, true);
+        }
+
+        $zipPath = $tmpDir . '/import.zip';
+        $uploadedFile->move($tmpDir, 'import.zip');
+
+        $zip = new \ZipArchive();
+        if ($zip->open($zipPath) === true) {
+            $zip->extractTo($tmpDir);
+            $zip->close();
+        } else {
+            return new Response('❌ Ошибка при распаковке архива', 500);
+        }
+
+        $sqlFile = null;
+        foreach (scandir($tmpDir) as $file) {
+            if (str_ends_with($file, '.sql')) {
+                $sqlFile = $tmpDir . '/' . $file;
+                break;
+            }
+        }
+
+        if (!$sqlFile || !file_exists($sqlFile)) {
+            return new Response('❌ SQL файл не найден в архиве', 400);
+        }
+
+        $resetProcess = new Process([
+            'mysql',
+            '-h', '127.0.0.1',
+            '-u', 'shared-backend_book-memory-admin',
+            '-pQwertyy1AAsdgsdgsdf',
+            '-e', 'DROP DATABASE IF EXISTS `shared-backend_book-memory-admin`; CREATE DATABASE `shared-backend_book-memory-admin`;'
+        ]);
+        $resetProcess->mustRun();
+
+        $process = new Process([
+            'mysql',
+            '-h', '127.0.0.1',
+            '-u', 'shared-backend_book-memory-admin',
+            '-pQwertyy1AAsdgsdgsdf',
+            'shared-backend_book-memory-admin'
+        ]);
+
+        $process->setInput(file_get_contents($sqlFile));
+        $process->setTimeout(600);
+
+        try {
+            $process->run();
+        } catch (ProcessFailedException $e) {
+            return new Response('❌ Ошибка при импорте SQL: ' . $e->getMessage(), 500);
+        }
+
+        $sourcePublic = $tmpDir . '/public';
+        $destPublic = $projectDir . '/public';
+
+        if (!is_dir($sourcePublic)) {
+            return new Response('❌ Папка public не найдена в архиве', 400);
+        }
+
+        $filesystem = new Filesystem();
+        try {
+            $filesystem->remove($destPublic);
+            $filesystem->rename($sourcePublic, $destPublic);
+        } catch (\Exception $e) {
+            return new Response('❌ Ошибка при замене папки public: ' . $e->getMessage(), 500);
+        }
+
+        $this->addFlash('success', '✅ Импорт успешно завершён');
+
+        return $this->redirectToRoute('admin');
     }
 }

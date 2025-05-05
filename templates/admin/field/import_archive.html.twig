@@ -1,0 +1,17 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}
+    Импорт архива
+{% endblock %}
+
+{% block page_content %}
+    <div class="container mt-4">
+        <form method="post" enctype="multipart/form-data" action="{{ path('admin_handle_import_archive') }}">
+            <div class="form-group">
+                <label for="archive">Выберите архив (.zip), содержащий .sql и папку public:</label>
+                <input type="file" name="archive" id="archive" class="form-control mt-2 mb-4" accept=".zip" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Импортировать</button>
+        </form>
+    </div>
+{% endblock %}
