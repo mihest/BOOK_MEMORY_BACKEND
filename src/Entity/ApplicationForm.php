@@ -355,7 +355,7 @@ class ApplicationForm
 
     public function getAdditional(): ?string
     {
-        return $this->additional;
+        return strip_tags(html_entity_decode($this->additional));
     }
 
     public function setAdditional(?string $additional): static
