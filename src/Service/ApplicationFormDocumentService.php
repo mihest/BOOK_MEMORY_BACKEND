@@ -78,7 +78,7 @@ readonly class ApplicationFormDocumentService
         foreach ($images as $i => $image) {
             $rowIndex = $i + 1;
             $imagePath = $this->projectDir . '/public/images/application_form/' . $image->getImage();
-            
+
             if (file_exists($imagePath)) {
                 $docxCompatiblePath = $this->ensureDocxCompatibleImage($imagePath);
                 if ($docxCompatiblePath === null)
@@ -185,7 +185,7 @@ readonly class ApplicationFormDocumentService
     {
         $text = '';
         foreach ($form->getHeroAward() as $award) {
-            $text .= sprintf("%s, %s\n%s\n\n",
+            $text .= sprintf("%s\n%s\n%s\n\n",
                 $award->getTitle() ?? 'Название не указано',
                 $award->getYearAt() ?? 'Год не указан',
                 $award->getDescription() ?? 'Описание отсутствует');

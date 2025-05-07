@@ -63,7 +63,6 @@ class UserCrudController extends AbstractCrudController
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof User && $entityInstance->getPlainPassword()) {
-            $this->addFlash('notice', 'Пароль изменен и сохранен!');
             $entityInstance->setPassword($this->passwordEncoder->hashPassword($entityInstance, $entityInstance->getPlainPassword()));
         }
 
