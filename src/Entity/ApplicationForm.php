@@ -253,7 +253,7 @@ class ApplicationForm
 
     #[ORM\Column(length: 255)]
     #[Groups('applicationForm:read')]
-    private ?string $status = null;
+    private ?string $status = 'Не рассмотрена';
 
     #[ORM\Column(length: 255)]
     #[Groups('applicationForm:read')]
