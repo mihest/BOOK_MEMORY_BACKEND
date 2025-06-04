@@ -127,7 +127,6 @@ readonly class ApplicationFormDocumentService
                 $template->setValue("ARCHIVE#{$rowIndex}", 'Изображение не найдено');
             }
         }
-
         $path = tempnam(sys_get_temp_dir(), 'form_') . '.docx';
         $template->saveAs($path);
         return $path;
@@ -136,24 +135,44 @@ readonly class ApplicationFormDocumentService
     private function convertDocxToPdf(string $docxPath): array
     {
         $outputDir = $this->projectDir . "/public/media/application_form_pdf";
+
+        // Проверка, существует ли директория для вывода, если нет — создать
         if (!is_dir($outputDir)) {
             mkdir($outputDir, 0755, true);
         }
 
-        $process = new Process([
-            'libreoffice', '--headless', '--convert-to', 'pdf', '--outdir', $outputDir, $docxPath
-        ]);
-        $process->run();
+        // Преобразуем пути в формат, который понимает командная строка Windows (заменяем слэши)
+        $docxPath = str_replace("\\", "/", $docxPath);
+        $outputDir = str_replace("\\", "/", $outputDir);
 
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
+        // Строим команду для конвертации
+        $command = "\"C:/Program Files/LibreOffice/program/soffice.exe\" --headless --convert-to pdf --outdir \"$outputDir\" \"$docxPath\"";
+
+        // Выполняем команду и получаем вывод
+        $output = shell_exec($command);
+
+        // Если вывод пустой или команда не прошла, выводим ошибку
+        if ($output !== null) {
+            dd("Ошибка при конвертации документа!", $command, $outputDir, $docxPath, $output);
         }
 
+        // Получаем имя файла PDF
         $pdfFilename = basename($docxPath, '.docx') . '.pdf';
+        $tempPdfPath = $outputDir . '/' . basename($docxPath, '.docx') . '.pdf';
+
+        // Проверяем, если файл с временным именем существует, переименовываем его
+        if (file_exists($tempPdfPath)) {
+            $correctPdfPath = $outputDir . '/' . $pdfFilename;
+
+            // Переименовываем файл, если это временный файл
+            rename($tempPdfPath, $correctPdfPath);
+        }
+
+        // Формируем и возвращаем данные о файле
         return [
             'filename' => $pdfFilename,
-            'fullPath' => $outputDir . '/' . $pdfFilename,
-            'url' => 'https://book-memory-admin.itlabs.top/public/media/application_form_pdf/' . $pdfFilename
+            'fullPath' => $correctPdfPath,
+            'url' => 'https://hero-of-my-family-admin.itlabs.top/public/media/application_form_pdf/' . $pdfFilename
         ];
     }
 
@@ -185,7 +204,7 @@ readonly class ApplicationFormDocumentService
     {
         $text = '';
         foreach ($form->getHeroAward() as $award) {
-            $text .= sprintf("%s\n%s\n%s\n\n",
+            $text .= sprintf("%s, %s\n%s\n\n",
                 $award->getTitle() ?? 'Название не указано',
                 $award->getYearAt() ?? 'Год не указан',
                 $award->getDescription() ?? 'Описание отсутствует');
