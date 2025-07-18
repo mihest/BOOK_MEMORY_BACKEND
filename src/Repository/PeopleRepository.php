@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\ApplicationForm;
+use App\Entity\People;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<ApplicationForm>
+ * @extends ServiceEntityRepository<People>
  */
-class ApplicationFormRepository extends ServiceEntityRepository
+class PeopleRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, ApplicationForm::class);
+        parent::__construct($registry, People::class);
     }
 
-    public function save(ApplicationForm $entity, bool $flush = false): void
+    public function save(People $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -89,7 +89,7 @@ class ApplicationFormRepository extends ServiceEntityRepository
     }
 
 //    /**
-//     * @return ApplicationForm[] Returns an array of ApplicationForm objects
+//     * @return People[] Returns an array of People objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -103,7 +103,7 @@ class ApplicationFormRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?ApplicationForm
+//    public function findOneBySomeField($value): ?People
 //    {
 //        return $this->createQueryBuilder('a')
 //            ->andWhere('a.exampleField = :val')

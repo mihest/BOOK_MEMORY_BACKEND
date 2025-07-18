@@ -2,8 +2,8 @@
 
 namespace App\Service;
 
-use App\Entity\ApplicationForm;
-use App\Repository\ApplicationFormRepository;
+use App\Entity\People;
+use App\Repository\PeopleRepository;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -18,44 +18,44 @@ use Endroid\QrCode\Writer\PngWriter;
 readonly class ApplicationFormDocumentService
 {
     public function __construct(
-        private ApplicationFormRepository $applicationFormRepository,
-        private string $projectDir,) {}
+        private PeopleRepository $peopleRepository,
+        private string           $projectDir,) {}
 
-    public function process(ApplicationForm $form): void
-    {
-        if ($form->getQr()) {
-            $oldQrPath = $this->projectDir . '/public/media/application_form_qr/' . $form->getQr();
-            if (file_exists($oldQrPath)) {
-                unlink($oldQrPath);
-            }
-        }
+//    public function process(People $form): void
+//    {
+//        if ($form->getQr()) {
+//            $oldQrPath = $this->projectDir . '/public/media/application_form_qr/' . $form->getQr();
+//            if (file_exists($oldQrPath)) {
+//                unlink($oldQrPath);
+//            }
+//        }
+//
+//        if ($form->getPdf()) {
+//            $oldPdfPath = $this->projectDir . '/public/media/application_form_pdf/' . $form->getPdf();
+//            if (file_exists($oldPdfPath)) {
+//                unlink($oldPdfPath);
+//            }
+//        }
+//
+//        $docxPath = $this->generateDocxFromTemplate($form);
+//        $pdfPath = $this->convertDocxToPdf($docxPath);
+//
+//        $qrPath = $this->generateQrCode($pdfPath['url']);
+//
+//        if (file_exists($qrPath)) {
+//            $form->setQr(basename($qrPath));
+//            $form->setQrFile(new File($qrPath));
+//        }
+//
+//        if (file_exists($pdfPath['fullPath'])) {
+//            $form->setPdf($pdfPath['filename']);
+//            $form->setPdfFile(new File($pdfPath['fullPath']));
+//        }
+//
+//        $this->peopleRepository->save($form, true);
+//    }
 
-        if ($form->getPdf()) {
-            $oldPdfPath = $this->projectDir . '/public/media/application_form_pdf/' . $form->getPdf();
-            if (file_exists($oldPdfPath)) {
-                unlink($oldPdfPath);
-            }
-        }
-
-        $docxPath = $this->generateDocxFromTemplate($form);
-        $pdfPath = $this->convertDocxToPdf($docxPath);
-
-        $qrPath = $this->generateQrCode($pdfPath['url']);
-
-        if (file_exists($qrPath)) {
-            $form->setQr(basename($qrPath));
-            $form->setQrFile(new File($qrPath));
-        }
-
-        if (file_exists($pdfPath['fullPath'])) {
-            $form->setPdf($pdfPath['filename']);
-            $form->setPdfFile(new File($pdfPath['fullPath']));
-        }
-
-        $this->applicationFormRepository->save($form, true);
-    }
-
-    private function generateDocxFromTemplate(ApplicationForm $form): string
+    private function generateDocxFromTemplate(People $form): string
     {
         $template = new TemplateProcessor($this->projectDir . '/public/шаблон.docx');
 
@@ -67,7 +67,7 @@ readonly class ApplicationFormDocumentService
             'YEAREND' => $form->getDeathDateAt() ?? 'Нет данных',
             'PLACE' => $form->getCity() ?? 'Нет данных',
             'MILITARYRANK' => $form->getMilitaryRank() ?? 'Нет данных',
-            'CATEGORY' => $form->getCategory() ?? 'Нет данных',
+            'TYPE' => $form->getType() ?? 'Нет данных',
             'ADDITIONALDATAFIRST' => $form->getAdditional() ?? 'Нет данных',
             'AWARDS_BLOCK' => $this->formatAwards($form) ?? 'Нет данных',
         ]);
@@ -77,7 +77,7 @@ readonly class ApplicationFormDocumentService
 
         foreach ($images as $i => $image) {
             $rowIndex = $i + 1;
-            $imagePath = $this->projectDir . '/public/images/application_form/' . $image->getImage();
+            $imagePath = $this->projectDir . '/public/images/people/' . $image->getImage();
 
             if (file_exists($imagePath)) {
                 $docxCompatiblePath = $this->ensureDocxCompatibleImage($imagePath);
@@ -105,7 +105,7 @@ readonly class ApplicationFormDocumentService
 
         foreach ($archives as $i => $archive) {
             $rowIndex = $i + 1;
-            $archivePath = $this->projectDir . '/public/media/application_form/' . $archive->getMedia();
+            $archivePath = $this->projectDir . '/public/media/people/' . $archive->getMedia();
 
             if (file_exists($archivePath) && !str_contains($archivePath, '.pdf')) {
                 $docxCompatiblePath = $this->ensureDocxCompatibleImage($archivePath);
@@ -200,7 +200,7 @@ readonly class ApplicationFormDocumentService
         return $filePath;
     }
 
-    private function formatAwards(ApplicationForm $form): ?string
+    private function formatAwards(People $form): ?string
     {
         $text = '';
         foreach ($form->getHeroAward() as $award) {

@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Traits\CreatedAtTrait;
 use App\Entity\Traits\UpdatedAtTrait;
-use App\Repository\ApplicationFormArchiveRepository;
+use App\Repository\PeopleArchiveRepository;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
@@ -14,8 +14,8 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\HasLifecycleCallbacks]
 #[Vich\Uploadable]
-#[ORM\Entity(repositoryClass: ApplicationFormArchiveRepository::class)]
-class ApplicationFormArchive
+#[ORM\Entity(repositoryClass: PeopleArchiveRepository::class)]
+class PeopleArchive
 {
     use CreatedAtTrait;
     use UpdatedAtTrait;
@@ -30,10 +30,10 @@ class ApplicationFormArchive
     #[Groups('applicationForm:read')]
     private ?string $media = null;
 
-    #[ORM\ManyToOne(inversedBy: 'archive')]
-    private ?ApplicationForm $applicationForm = null;
+    #[ORM\ManyToOne(targetEntity: People::class, inversedBy: 'archive')]
+    private ?People $people = null;
 
-    #[Vich\UploadableField(mapping: 'application_form_media', fileNameProperty: 'media')]
+    #[Vich\UploadableField(mapping: 'people_media', fileNameProperty: 'media')]
     #[Assert\Image(mimeTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'application/pdf'])]
     private ?File $mediaFile = null;
 
@@ -54,14 +54,14 @@ class ApplicationFormArchive
         return $this;
     }
 
-    public function getApplicationForm(): ?ApplicationForm
+    public function getPeople(): ?People
     {
-        return $this->applicationForm;
+        return $this->people;
     }
 
-    public function setApplicationForm(?ApplicationForm $applicationForm): static
+    public function setPeople(?People $people): static
     {
-        $this->applicationForm = $applicationForm;
+        $this->people = $people;
 
         return $this;
     }

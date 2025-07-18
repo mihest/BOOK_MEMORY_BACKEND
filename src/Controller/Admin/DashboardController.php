@@ -2,13 +2,9 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\AiKeywordBanned;
-use App\Entity\ApplicationForm;
-use App\Entity\Exhibit;
 use App\Entity\HeroAward;
-use App\Entity\Institutions;
 use App\Entity\MilitaryRanks;
-use App\Entity\PersonalDataAccept;
+use App\Entity\People;
 use App\Repository\PersonalDataAcceptRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
@@ -52,38 +48,26 @@ class DashboardController extends AbstractDashboardController
             ->generateRelativeUrls();
     }
 
-    public function __construct(
-        private readonly PersonalDataAcceptRepository $personalDataAcceptRepository,
-        private readonly HttpClientInterface $httpClient,
-    ) {}
+    public function __construct() {}
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::section('Заявки с формы');
-        yield MenuItem::linkToCrud('Нерассмотренные', 'fa fa-calendar', ApplicationForm::class)
-            ->setController(ApplicationFormWaitingCrudController::class);
-        yield MenuItem::linkToCrud('Принятые', 'fa fa-calendar', ApplicationForm::class)
-            ->setController(ApplicationFormAgreeCrudController::class);
-        yield MenuItem::linkToCrud('Отклоненные', 'fa fa-calendar', ApplicationForm::class)
-            ->setController(ApplicationFormDisagreeCrudController::class);
-        yield MenuItem::linkToCrud('Автоматически принятые', 'fa fa-calendar', ApplicationForm::class)
-            ->setController(ApplicationFormAutoAgreeCrudController::class);
-        yield MenuItem::linkToCrud('Автоматически отклонённые', 'fa fa-calendar', ApplicationForm::class)
-            ->setController(ApplicationFormAutoDisagreeCrudController::class);
-        yield MenuItem::section('Заполнение');
+        yield MenuItem::subMenu('Люди', 'fas fa-list')->setSubItems([
+            MenuItem::linkToCrud('Российско-чеченский конфликт', 'fas fa-user', People::class)
+                ->setController(PeopleChechnyaController::class),
+            MenuItem::linkToCrud('Герои СВО', 'fas fa-user', People::class)
+                ->setController(PeopleSvoController::class),
+            MenuItem::linkToCrud('Герои ВОВ', 'fas fa-user', People::class)
+                ->setController(PeopleVovController::class),
+            MenuItem::linkToCrud('Локальные конфликты', 'fas fa-user', People::class)
+                ->setController(PeopleLocalController::class),
+            MenuItem::linkToCrud('Афганская война', 'fa fa-user', People::class)
+                ->setController(PeopleAfganController::class)
+        ]);
+
         yield MenuItem::linkToCrud('Воинские звания', 'fas fa-list', MilitaryRanks::class);
         yield MenuItem::linkToCrud('Награды героев', 'fas fa-medal', HeroAward::class);
-        yield MenuItem::linkToCrud('Организации', 'fas fa-list', Institutions::class);
-
-        yield MenuItem::linkToCrud('Слова забаненные нейросетью', 'fa fa-list', AiKeywordBanned::class);
-
-        if ($this->personalDataAcceptRepository->count([]) === 0) {
-            yield MenuItem::linkToCrud('Согласие на обработку персональных данных', 'fa fa-info', PersonalDataAccept::class)
-                ->setAction(Action::NEW);
-        } else {
-            yield MenuItem::linkToCrud('Согласие на обработку персональных данных', 'fa fa-info', PersonalDataAccept::class)
-                ->setAction(Action::EDIT)->setEntityId($this->personalDataAcceptRepository->findAll()[0]->getId());
-        }
+        // }
 
         yield MenuItem::section('Настройки');
         yield MenuItem::linkToUrl('API', 'fa fa-link', '/api')->setLinkTarget('_blank')

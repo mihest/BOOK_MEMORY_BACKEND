@@ -2,7 +2,7 @@
 
 namespace App\Controller\Api\ApplicationForm;
 
-use App\Repository\ApplicationFormRepository;
+use App\Repository\PeopleRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 class SearchController extends AbstractController
 {
     public function __construct(
-        private readonly ApplicationFormRepository $applicationFormRepository,
+        private readonly PeopleRepository $peopleRepository,
     ) {}
 
     public function __invoke(
@@ -44,9 +44,9 @@ class SearchController extends AbstractController
         );
 
         if ($noFilters) {
-            $members = $this->applicationFormRepository->findAllPaginated($page, $itemsPerPage);
+            $members = $this->peopleRepository->findAllPaginated($page, $itemsPerPage);
         } else {
-            $members = $this->applicationFormRepository->findByFilters(
+            $members = $this->peopleRepository->findByFilters(
                 city:         $city,
                 letters:      $initialLetters,
                 militaryRank: $militaryRank,

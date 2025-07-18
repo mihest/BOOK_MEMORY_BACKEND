@@ -2,21 +2,21 @@
 
 namespace App\Repository;
 
-use App\Entity\ApplicationFormImages;
+use App\Entity\PeopleArchive;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<ApplicationFormImages>
+ * @extends ServiceEntityRepository<PeopleArchive>
  */
-class ApplicationFormImagesRepository extends ServiceEntityRepository
+class PeopleArchiveRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, ApplicationFormImages::class);
+        parent::__construct($registry, PeopleArchive::class);
     }
 
-    public function save(ApplicationFormImages $entity, bool $flush = false): void
+    public function save(PeopleArchive $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -26,7 +26,7 @@ class ApplicationFormImagesRepository extends ServiceEntityRepository
     }
 
     //    /**
-    //     * @return ApplicationFormImages[] Returns an array of ApplicationFormImages objects
+    //     * @return ApplicationFromArchive[] Returns an array of ApplicationFromArchive objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -40,7 +40,7 @@ class ApplicationFormImagesRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?ApplicationFormImages
+    //    public function findOneBySomeField($value): ?ApplicationFromArchive
     //    {
     //        return $this->createQueryBuilder('a')
     //            ->andWhere('a.exampleField = :val')

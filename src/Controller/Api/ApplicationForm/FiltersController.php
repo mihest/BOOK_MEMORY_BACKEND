@@ -2,8 +2,8 @@
 
 namespace App\Controller\Api\ApplicationForm;
 
-use App\Repository\ApplicationFormRepository;
 use App\Repository\MilitaryRanksRepository;
+use App\Repository\PeopleRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
@@ -26,13 +26,13 @@ class FiltersController extends AbstractController
     ];
 
     public function __construct(
-        private readonly ApplicationFormRepository $applicationFormRepository,
-        private readonly MilitaryRanksRepository  $militaryRanksRepository,
+        private readonly PeopleRepository        $peopleRepository,
+        private readonly MilitaryRanksRepository $militaryRanksRepository,
     ) {}
 
     public function __invoke(#[MapQueryParameter] ?string $category            = null,): JsonResponse
     {
-        $members = $this->applicationFormRepository->findBy(['status' => 'Принята', 'category' => $category]);
+        $members = $this->peopleRepository->findBy(['status' => 'Принята', 'category' => $category]);
 
         $letters        = [];
         $usedRankTitles = [];

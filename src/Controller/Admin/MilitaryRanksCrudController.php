@@ -26,15 +26,6 @@ class MilitaryRanksCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        yield ChoiceField::new('category', 'Категория')
-            ->setChoices([
-                'Герои Великой Отечественной войны' => 'Герои Великой Отечественной войны',
-                'Труженики тыла' => 'Труженики тыла',
-                'Герои локальных войн' => 'Герои локальных войн',
-                'Герои - ликвидаторы ЧС' => 'Герои - ликвидаторы ЧС',
-                'Герои СВО' => 'Герои СВО',
-            ])
-            ->setColumns(8);
         yield TextField::new('title', 'Название')
             ->setColumns(8);
     }

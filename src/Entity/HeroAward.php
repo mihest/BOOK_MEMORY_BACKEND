@@ -5,6 +5,8 @@ namespace App\Entity;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\OpenApi\Model\Operation;
+use ApiPlatform\OpenApi\Model\Parameter;
 use App\Repository\HeroAwardRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -12,11 +14,30 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[GetCollection(
+    openapi: new Operation(
+        parameters: [
+            new Parameter(
+                name: 'type',
+                in: 'query',
+                required: false,
+                schema: [
+                    'type' => 'string',
+                    'enum' => [
+                        'afgan',
+                        'vov',
+                        'svo',
+                        'chechnya',
+                        'local'
+                    ]
+                ],
+
+            ),
+        ]
+    ),
     paginationEnabled: false,
     order: ['title' => 'ASC'],
     normalizationContext: ['groups' => ['heroAward:read']]
 )]
-#[ApiFilter(SearchFilter::class, properties: ['category' => 'exact'])]
 #[ORM\Entity(repositoryClass: HeroAwardRepository::class)]
 class HeroAward
 {
@@ -28,21 +49,17 @@ class HeroAward
 
     #[ORM\Column(length: 255)]
     #[Groups(['heroAward:read'])]
-    private ?string $category = null;
-
-    #[ORM\Column(length: 255)]
-    #[Groups(['heroAward:read'])]
     private ?string $title = null;
 
     /**
-     * @var Collection<int, ApplicationFormHeroAward>
+     * @var Collection<int, People>
      */
-    #[ORM\OneToMany(targetEntity: ApplicationFormHeroAward::class, mappedBy: 'heroAward', cascade: ['all'])]
-    private Collection $applicationFormHeroAwards;
+    #[ORM\ManyToMany(targetEntity: People::class, mappedBy: 'heroAwards')]
+    private Collection $peoples;
 
     public function __construct()
     {
-        $this->applicationFormHeroAwards = new ArrayCollection();
+        $this->peoples = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -53,18 +70,6 @@ class HeroAward
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getCategory(): ?string
-    {
-        return $this->category;
-    }
-
-    public function setCategory(string $category): static
-    {
-        $this->category = $category;
-
-        return $this;
     }
 
     public function getTitle(): ?string
@@ -80,32 +85,10 @@ class HeroAward
     }
 
     /**
-     * @return Collection<int, ApplicationFormHeroAward>
+     * @return Collection<int, People>
      */
-    public function getApplicationFormHeroAwards(): Collection
+    public function getPeoples(): Collection
     {
-        return $this->applicationFormHeroAwards;
-    }
-
-    public function addApplicationFormHeroAward(ApplicationFormHeroAward $applicationFormHeroAward): static
-    {
-        if (!$this->applicationFormHeroAwards->contains($applicationFormHeroAward)) {
-            $this->applicationFormHeroAwards->add($applicationFormHeroAward);
-            $applicationFormHeroAward->setHeroAward($this);
-        }
-
-        return $this;
-    }
-
-    public function removeApplicationFormHeroAward(ApplicationFormHeroAward $applicationFormHeroAward): static
-    {
-        if ($this->applicationFormHeroAwards->removeElement($applicationFormHeroAward)) {
-            // set the owning side to null (unless already changed)
-            if ($applicationFormHeroAward->getHeroAward() === $this) {
-                $applicationFormHeroAward->setHeroAward(null);
-            }
-        }
-
-        return $this;
+        return $this->peoples;
     }
 }

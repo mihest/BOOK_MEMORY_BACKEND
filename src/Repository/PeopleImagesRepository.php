@@ -2,21 +2,21 @@
 
 namespace App\Repository;
 
-use App\Entity\ApplicationFormHeroAward;
+use App\Entity\PeopleImages;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<ApplicationFormHeroAward>
+ * @extends ServiceEntityRepository<PeopleImages>
  */
-class ApplicationFormHeroAwardRepository extends ServiceEntityRepository
+class PeopleImagesRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, ApplicationFormHeroAward::class);
+        parent::__construct($registry, PeopleImages::class);
     }
 
-    public function save(ApplicationFormHeroAward $entity, bool $flush = false): void
+    public function save(PeopleImages $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -26,7 +26,7 @@ class ApplicationFormHeroAwardRepository extends ServiceEntityRepository
     }
 
     //    /**
-    //     * @return ApplicationFormHeroAward[] Returns an array of ApplicationFormHeroAward objects
+    //     * @return PeopleImages[] Returns an array of PeopleImages objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -40,7 +40,7 @@ class ApplicationFormHeroAwardRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?ApplicationFormHeroAward
+    //    public function findOneBySomeField($value): ?PeopleImages
     //    {
     //        return $this->createQueryBuilder('a')
     //            ->andWhere('a.exampleField = :val')
