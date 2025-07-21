@@ -6,16 +6,12 @@ use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Post;
-use ApiPlatform\OpenApi\Model;
 use ApiPlatform\OpenApi\Model\Operation;
 use ApiPlatform\OpenApi\Model\Parameter;
-use App\Controller\Api\ApplicationForm\FiltersController;
-use App\Controller\Api\ApplicationForm\SearchController;
 use App\Entity\Traits\CreatedAtTrait;
 use App\Entity\Traits\UpdatedAtTrait;
+use App\Filters\PeopleFullNameFilter;
 use App\Repository\PeopleRepository;
-use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -43,7 +39,7 @@ enum PeopleType: string
             new Parameter(
                 name: 'type',
                 in: 'query',
-                required: false,
+                required: true,
                 schema: [
                     'type' => 'string',
                     'enum' => [
@@ -54,13 +50,22 @@ enum PeopleType: string
                         'local'
                     ]
                 ],
-
+            ),
+            new Parameter(
+                name: 'full_name',
+                in: 'query',
+                description: 'Поиск по полному имени (фамилия, имя, отчество)',
+                required: false,
+                schema: [
+                    'type' => 'string'
+                ]
             ),
         ]
     ),
     paginationEnabled: false,
     normalizationContext: ['groups' => ['applicationForm:read']],
 )]
+#[ApiFilter(PeopleFullNameFilter::class, properties: ['full_name' => 'partial'])]
 #[ORM\Entity(repositoryClass: PeopleRepository::class)]
 class People
 {
@@ -337,7 +342,7 @@ class People
 
     public function getHeroAwardAll(): string
     {
-        $heroAwards = $this->heroAward;
+        $heroAwards = $this->heroAwards;
         $arr = [];
         $i = 1;
 

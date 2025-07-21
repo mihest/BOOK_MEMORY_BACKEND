@@ -6,6 +6,7 @@ use App\Entity\MilitaryRanks;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 class MilitaryRanksCrudController extends AbstractCrudController
@@ -26,6 +27,9 @@ class MilitaryRanksCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
+        yield IdField::new('id', 'ID')
+            ->onlyOnDetail()
+            ->onlyOnIndex();
         yield TextField::new('title', 'Название')
             ->setColumns(8);
     }

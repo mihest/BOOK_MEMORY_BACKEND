@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Controller\Admin\Field\VichImageField;
 use App\Entity\People;
 use App\Form\PeopleArchiveType;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
@@ -19,6 +20,15 @@ class PeopleController extends AbstractCrudController
     public static function getEntityFqcn(): string
     {
         return People::class;
+    }
+
+    public function configureCrud(Crud $crud): Crud
+    {
+        return parent::configureCrud($crud)
+            ->setEntityLabelInPlural('Герои')
+            ->setEntityLabelInSingular('запись')
+            ->setPageTitle(Crud::PAGE_NEW, 'Добавление записи')
+            ->setPageTitle(Crud::PAGE_EDIT, 'Изменение записи');
     }
 
     public function configureFields(string $pageName): iterable

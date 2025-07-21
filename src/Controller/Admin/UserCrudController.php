@@ -32,9 +32,9 @@ class UserCrudController extends AbstractCrudController
         return parent::configureCrud($crud)
             ->setEntityPermission('ROLE_ADMIN')
             ->setEntityLabelInPlural('Пользователи')
-            ->setEntityLabelInSingular('Пользователя')
-            ->setPageTitle(Crud::PAGE_NEW, 'Добавление пользователя')
-            ->setPageTitle(Crud::PAGE_EDIT, 'Изменение пользователя')
+            ->setEntityLabelInSingular('запись')
+            ->setPageTitle(Crud::PAGE_NEW, 'Добавление записи')
+            ->setPageTitle(Crud::PAGE_EDIT, 'Изменение записи')
             ->setPageTitle(Crud::PAGE_DETAIL, "Информация о пользователе");
     }
 

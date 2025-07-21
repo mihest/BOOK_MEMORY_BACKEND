@@ -16,7 +16,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
     order: ['title' => 'ASC'],
     normalizationContext: ['groups' => ['militaryRanks:read']],
 )]
-#[ApiFilter(SearchFilter::class, properties: ['category' => 'exact'])]
 #[ORM\Entity(repositoryClass: MilitaryRanksRepository::class)]
 class MilitaryRanks
 {
@@ -25,10 +24,6 @@ class MilitaryRanks
     #[ORM\Column]
     #[Groups(['militaryRanks:read'])]
     private ?int $id = null;
-
-    #[ORM\Column(length: 255)]
-    #[Groups(['militaryRanks:read'])]
-    private ?string $category = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['militaryRanks:read'])]

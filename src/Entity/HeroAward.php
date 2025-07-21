@@ -14,26 +14,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[GetCollection(
-    openapi: new Operation(
-        parameters: [
-            new Parameter(
-                name: 'type',
-                in: 'query',
-                required: false,
-                schema: [
-                    'type' => 'string',
-                    'enum' => [
-                        'afgan',
-                        'vov',
-                        'svo',
-                        'chechnya',
-                        'local'
-                    ]
-                ],
-
-            ),
-        ]
-    ),
     paginationEnabled: false,
     order: ['title' => 'ASC'],
     normalizationContext: ['groups' => ['heroAward:read']]
@@ -64,7 +44,7 @@ class HeroAward
 
     public function __toString(): string
     {
-        return (string) $this->title ?? '/' . ' - ' . (string) $this->category ?? '/';
+        return $this->title;
     }
 
     public function getId(): ?int
