@@ -8,7 +8,6 @@
     "ext-exif": "*",
     "ext-gd": "*",
     "ext-imagick": "*",
-    "ext-ssh2": "*",
     "ext-zip": "*",
     "api-platform/core": "4.*",
     "cboden/ratchet": "^0.4.4",
