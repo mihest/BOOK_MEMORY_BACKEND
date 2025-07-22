@@ -49,7 +49,7 @@ enum PeopleType: string
                         'chernobyl',
                         'local'
                     ]
-                ],
+                ]
             ),
             new Parameter(
                 name: 'full_name',
@@ -66,6 +66,7 @@ enum PeopleType: string
     normalizationContext: ['groups' => ['applicationForm:read:minimal']],
 )]
 #[ApiFilter(PeopleFullNameFilter::class, properties: ['full_name' => 'partial'])]
+#[ApiFilter(SearchFilter::class, properties: ['type' => 'exact'])]
 #[ORM\Entity(repositoryClass: PeopleRepository::class)]
 class People
 {
