@@ -10,6 +10,7 @@ use ApiPlatform\OpenApi\Model\Parameter;
 use App\Repository\HeroAwardRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -28,8 +29,16 @@ class HeroAward
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['heroAward:read'])]
+    #[Groups(['heroAward:read', 'applicationForm:read'])]
     private ?string $title = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['heroAward:read', 'applicationForm:read'])]
+    private ?string $description = null;
+
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
+    #[Groups(['heroAward:read', 'applicationForm:read'])]
+    private ?int $yearAt = null;
 
     /**
      * @var Collection<int, People>
@@ -60,6 +69,30 @@ class HeroAward
     public function setTitle(string $title): static
     {
         $this->title = $title;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getYearAt(): ?int
+    {
+        return $this->yearAt;
+    }
+
+    public function setYearAt(?int $yearAt): static
+    {
+        $this->yearAt = $yearAt;
 
         return $this;
     }

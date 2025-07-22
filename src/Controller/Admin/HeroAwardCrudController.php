@@ -7,6 +7,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 class HeroAwardCrudController extends AbstractCrudController
@@ -30,5 +31,7 @@ class HeroAwardCrudController extends AbstractCrudController
         yield IdField::new('id', 'ID')->onlyOnIndex();
         yield TextField::new('title', 'Название')
             ->setColumns(8);
+        yield TextField::new('description', 'Описание');
+        yield IntegerField::new('yearAt', 'Год награждения');
     }
 }

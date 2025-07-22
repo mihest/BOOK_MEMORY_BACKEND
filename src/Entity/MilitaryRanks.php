@@ -22,28 +22,16 @@ class MilitaryRanks
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['militaryRanks:read'])]
+    #[Groups(['militaryRanks:read', 'applicationForm:read', 'applicationForm:read:minimal'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['militaryRanks:read'])]
+    #[Groups(['militaryRanks:read', 'applicationForm:read', 'applicationForm:read:minimal'])]
     private ?string $title = null;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getCategory(): ?string
-    {
-        return $this->category;
-    }
-
-    public function setCategory(string $category): static
-    {
-        $this->category = $category;
-
-        return $this;
     }
 
     public function getTitle(): ?string

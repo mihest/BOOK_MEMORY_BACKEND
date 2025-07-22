@@ -23,10 +23,10 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 enum PeopleType: string
 {
-    case AFGAN = 'afgan';
+    case RF = 'rf';
     case VOV = 'vov';
     case SVO = 'svo';
-    case CHECHNYA = 'chechnya';
+    case CHERNOBYL = 'chernobyl';
     case LOCAL = 'local';
 }
 
@@ -43,10 +43,10 @@ enum PeopleType: string
                 schema: [
                     'type' => 'string',
                     'enum' => [
-                        'afgan',
+                        'rf',
                         'vov',
                         'svo',
-                        'chechnya',
+                        'chernobyl',
                         'local'
                     ]
                 ],
@@ -63,7 +63,7 @@ enum PeopleType: string
         ]
     ),
     paginationEnabled: false,
-    normalizationContext: ['groups' => ['applicationForm:read']],
+    normalizationContext: ['groups' => ['applicationForm:read:minimal']],
 )]
 #[ApiFilter(PeopleFullNameFilter::class, properties: ['full_name' => 'partial'])]
 #[ORM\Entity(repositoryClass: PeopleRepository::class)]
@@ -75,28 +75,28 @@ class People
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('applicationForm:read')]
+    #[Groups(['applicationForm:read', 'applicationForm:read:minimal'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('applicationForm:read')]
+    #[Groups(['applicationForm:read', 'applicationForm:read:minimal'])]
     private ?string $surname = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('applicationForm:read')]
+    #[Groups(['applicationForm:read', 'applicationForm:read:minimal'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups('applicationForm:read')]
+    #[Groups(['applicationForm:read', 'applicationForm:read:minimal'])]
     private ?string $patronymic = null;
 
-    #[ORM\ManyToOne(targetEntity: MilitaryRanks::class)]
+    #[ORM\ManyToOne(targetEntity: MilitaryRanks::class, fetch: 'EAGER')]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups('applicationForm:read')]
+    #[Groups(['applicationForm:read', 'applicationForm:read:minimal'])]
     private ?MilitaryRanks $militaryRank = null;
 
     #[ORM\Column(type: 'date',length: 255, nullable: true)]
-    #[Groups('applicationForm:read')]
+    #[Groups(['applicationForm:read', 'applicationForm:read:minimal'])]
     private ?DateTimeInterface $birthDateAt = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -108,17 +108,18 @@ class People
     private ?PeopleType $type = null;
 
     #[ORM\Column(type: 'date',length: 255, nullable: true)]
-    #[Groups('applicationForm:read')]
+    #[Groups(['applicationForm:read', 'applicationForm:read:minimal'])]
     private ?DateTimeInterface $deathDateAt = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups('applicationForm:read')]
+    #[Groups(['applicationForm:read', 'applicationForm:read:minimal'])]
     private ?string $city = null;
 
     #[Vich\UploadableField(mapping: 'people_images', fileNameProperty: 'image')]
     private ?File $imageFile = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['applicationForm:read', 'applicationForm:read:minimal'])]
     private ?string $image = null;
 
     /**

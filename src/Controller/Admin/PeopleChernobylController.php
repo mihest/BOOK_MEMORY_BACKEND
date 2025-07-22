@@ -8,19 +8,19 @@ use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 
-class PeopleAfganController extends PeopleController
+class PeopleChernobylController extends PeopleController
 {
    public function createIndexQueryBuilder(SearchDto $searchDto, EntityDto $entityDto, FieldCollection $fields, FilterCollection $filters): \Doctrine\ORM\QueryBuilder
    {
        $qb = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
-       $qb->andWhere('entity.type = :type')->setParameter('type', PeopleType::AFGAN);
+       $qb->andWhere('entity.type = :type')->setParameter('type', PeopleType::CHERNOBYL);
        return $qb;
    }
 
     public function createEntity(string $entityFqcn): People
     {
         $people = new People();
-        $people->setType(PeopleType::AFGAN);
+        $people->setType(PeopleType::CHERNOBYL);
         return $people;
     }
 

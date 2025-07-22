@@ -44,16 +44,16 @@ class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
     {
         yield MenuItem::subMenu('Люди', 'fas fa-list')->setSubItems([
-            MenuItem::linkToCrud('Российско-чеченский конфликт', 'fas fa-user', People::class)
-                ->setController(PeopleChechnyaController::class),
+            MenuItem::linkToCrud('Герои Советского союза, РФ и полные кавалеры ордена славы', 'fas fa-user', People::class)
+                ->setController(PeopleRfController::class),
             MenuItem::linkToCrud('Герои СВО', 'fas fa-user', People::class)
                 ->setController(PeopleSvoController::class),
             MenuItem::linkToCrud('Герои ВОВ', 'fas fa-user', People::class)
                 ->setController(PeopleVovController::class),
             MenuItem::linkToCrud('Локальные конфликты', 'fas fa-user', People::class)
                 ->setController(PeopleLocalController::class),
-            MenuItem::linkToCrud('Афганская война', 'fa fa-user', People::class)
-                ->setController(PeopleAfganController::class)
+            MenuItem::linkToCrud('Авария на Чернобыльской АЭС', 'fa fa-user', People::class)
+                ->setController(PeopleChernobylController::class)
         ]);
 
         yield MenuItem::linkToCrud('Воинские звания', 'fas fa-list', MilitaryRanks::class);

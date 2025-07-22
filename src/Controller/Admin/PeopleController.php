@@ -11,6 +11,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\Validator\Constraints\File;
 use Vich\UploaderBundle\Form\Type\VichImageType;
@@ -78,6 +79,7 @@ class PeopleController extends AbstractCrudController
         yield DateField::new('birthDateAt', 'Дата рождения');
         yield TextField::new('city', 'Место рождения')->onlyOnForms();
         yield DateField::new('deathDateAt', 'Дата смерти')->onlyOnForms();
+        yield TextareaField::new('additional', 'Дополнительные сведения')->onlyOnForms();
 
         yield CollectionField::new('archive', 'Архив')
             ->setEntryType(PeopleArchiveType::class)
