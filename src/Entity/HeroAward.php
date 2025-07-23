@@ -53,7 +53,7 @@ class HeroAward
 
     public function __toString(): string
     {
-        return $this->title;
+        return $this->title . ' ● ' . $this->yearAt;
     }
 
     public function getId(): ?int

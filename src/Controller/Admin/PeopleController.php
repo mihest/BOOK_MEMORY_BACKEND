@@ -40,11 +40,39 @@ class PeopleController extends AbstractCrudController
         yield TextField::new('fullName', 'ФИО')->onlyOnIndex();
         yield TextField::new('fullName', 'ФИО')->onlyOnDetail();
 
-        yield TextField::new('surname', 'Фамилия')->onlyOnForms();
-        yield TextField::new('name', 'Имя')->onlyOnForms();
+        yield TextField::new('surname', 'Фамилия')->setRequired(true)->onlyOnForms();
+        yield TextField::new('name', 'Имя')->setRequired(true)->onlyOnForms();
         yield TextField::new('patronymic', 'Отчество')->onlyOnForms();
 
         yield VichImageField::new('image', 'изображение')->onlyOnIndex();
+        yield TextField::new('imageFile', 'Загрузить изображение')->setRequired(true)
+            ->setFormType(VichImageType::class)
+            ->setFormTypeOptions([
+                'allow_delete' => false,
+                'download_uri' => false,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '20M',
+                        'mimeTypes' => [
+                            'image/jpg',
+                            'image/jpeg',
+                            'image/png',
+                            'image/webp',
+                        ],
+                        'mimeTypesMessage' => 'Пожалуйста, загрузите файл в формате JPG, JPEG, PNG или WEBP.',
+                        'maxSizeMessage' => 'Файл слишком большой (максимум {{ limit }}).',
+                    ]),
+                ],
+            ])
+            ->setHelp(
+                '<div class="mt-3">
+                    <span class="badge badge-info">*.jpg</span>
+                    <span class="badge badge-info">*.jpeg</span>
+                    <span class="badge badge-info">*.png</span>
+                    <span class="badge badge-info">*.webp</span>
+                </div>'
+            )
+            ->onlyWhenCreating();
         yield TextField::new('imageFile', 'Загрузить изображение')
             ->setFormType(VichImageType::class)
             ->setFormTypeOptions([
@@ -72,14 +100,14 @@ class PeopleController extends AbstractCrudController
                     <span class="badge badge-info">*.webp</span>
                 </div>'
             )
-            ->onlyOnForms();
+            ->onlyWhenUpdating();
 
         yield AssociationField::new('heroAwards', 'Награды');
-        yield AssociationField::new('militaryRank', 'Звание');
-        yield DateField::new('birthDateAt', 'Дата рождения');
-        yield TextField::new('city', 'Место рождения')->onlyOnForms();
+        yield AssociationField::new('militaryRank', 'Звание')->setRequired(true);
+        yield DateField::new('birthDateAt', 'Дата рождения')->setRequired(true);
+        yield TextField::new('city', 'Место рождения')->setRequired(true)->onlyOnForms();
         yield DateField::new('deathDateAt', 'Дата смерти')->onlyOnForms();
-        yield TextareaField::new('additional', 'Дополнительные сведения')->onlyOnForms();
+        yield TextareaField::new('additional', 'Дополнительные сведения')->setRequired(true)->onlyOnForms();
 
         yield CollectionField::new('archive', 'Архив')
             ->setEntryType(PeopleArchiveType::class)

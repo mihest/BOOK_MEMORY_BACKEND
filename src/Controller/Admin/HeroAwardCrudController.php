@@ -29,9 +29,9 @@ class HeroAwardCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         yield IdField::new('id', 'ID')->onlyOnIndex();
-        yield TextField::new('title', 'Название')
+        yield TextField::new('title', 'Название')->setRequired(true)
             ->setColumns(8);
-        yield TextField::new('description', 'Описание');
-        yield IntegerField::new('yearAt', 'Год награждения');
+        yield TextField::new('description', 'Описание')->setRequired(true);
+        yield IntegerField::new('yearAt', 'Год награждения')->setRequired(true);
     }
 }

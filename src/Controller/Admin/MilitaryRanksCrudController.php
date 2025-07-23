@@ -30,7 +30,7 @@ class MilitaryRanksCrudController extends AbstractCrudController
         yield IdField::new('id', 'ID')
             ->onlyOnDetail()
             ->onlyOnIndex();
-        yield TextField::new('title', 'Название')
+        yield TextField::new('title', 'Название')->setRequired(true)
             ->setColumns(8);
     }
 }
