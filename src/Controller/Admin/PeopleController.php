@@ -105,9 +105,9 @@ class PeopleController extends AbstractCrudController
         yield AssociationField::new('heroAwards', 'Награды');
         yield AssociationField::new('militaryRank', 'Звание')->setRequired(true);
         yield DateField::new('birthDateAt', 'Дата рождения')->setRequired(true);
-        yield TextField::new('city', 'Место рождения')->setRequired(true)->onlyOnForms();
+        yield TextField::new('city', 'Место рождения')->onlyOnForms();
         yield DateField::new('deathDateAt', 'Дата смерти')->onlyOnForms();
-        yield TextareaField::new('additional', 'Дополнительные сведения')->setRequired(true)->onlyOnForms();
+        yield TextareaField::new('additional', 'Дополнительные сведения')->onlyOnForms();
 
         yield CollectionField::new('archive', 'Архив')
             ->setEntryType(PeopleArchiveType::class)
