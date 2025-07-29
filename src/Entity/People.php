@@ -62,7 +62,7 @@ enum PeopleType: string
             ),
         ]
     ),
-    paginationEnabled: false,
+    paginationEnabled: true,
     normalizationContext: ['groups' => ['applicationForm:read:minimal']],
 )]
 #[ApiFilter(PeopleFullNameFilter::class, properties: ['full_name' => 'partial'])]
