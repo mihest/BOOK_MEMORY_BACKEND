@@ -7,7 +7,6 @@
     "php": ">=8.3",
     "ext-exif": "*",
     "ext-gd": "*",
-    "ext-imagick": "*",
     "ext-zip": "*",
     "api-platform/core": "4.*",
     "cboden/ratchet": "^0.4.4",

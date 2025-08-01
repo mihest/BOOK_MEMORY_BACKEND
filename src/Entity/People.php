@@ -19,6 +19,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 enum PeopleType: string
@@ -63,6 +64,7 @@ enum PeopleType: string
         ]
     ),
     paginationEnabled: true,
+    order: ['surname' => 'ASC', 'name' => 'ASC', 'patronymic' => 'ASC'],
     normalizationContext: ['groups' => ['applicationForm:read:minimal']],
 )]
 #[ApiFilter(PeopleFullNameFilter::class, properties: ['full_name' => 'partial'])]
@@ -125,6 +127,7 @@ class People
 
     /**
      * @var Collection<int, PeopleArchive>
+     * @Assert\Valid
      */
     #[ORM\OneToMany(targetEntity: PeopleArchive::class, mappedBy: 'people', cascade: ['persist'])]
     #[Groups('applicationForm:read')]
