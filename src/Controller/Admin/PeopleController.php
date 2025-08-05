@@ -113,14 +113,6 @@ class PeopleController extends AbstractCrudController
             ->setEntryType(PeopleArchiveType::class)
             ->setFormTypeOptions([
                 'by_reference' => false,
-                'entry_options' => function ($index, $formView, $options) use ($pageName) {
-                    $data = $formView->vars['value'] ?? null;
-                    $isEdit = $pageName === Crud::PAGE_EDIT && $data instanceof PeopleArchive && $data->getId() !== null;
-    
-                    return [
-                        'is_edit' => $isEdit,
-                    ];
-                },
             ])
             ->setEntryIsComplex(true)
             ->allowAdd()

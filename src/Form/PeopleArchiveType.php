@@ -7,8 +7,10 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Length;
 use Vich\UploaderBundle\Form\Type\VichFileType;
@@ -17,8 +19,6 @@ class PeopleArchiveType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $isEdit = $options['is_edit'] ?? false;
-
         $builder
             ->add('title', TextType::class, [
                 'label' => 'Заголовок',
@@ -36,15 +36,24 @@ class PeopleArchiveType extends AbstractType
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Описание',
-                'required' => false
-            ])
-            ->add('mediaFile', VichFileType::class, [
+                'required' => false,
+            ]);
+
+        // Динамически добавляем поле mediaFile в зависимости от состояния записи
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+            $form = $event->getForm();
+            $data = $event->getData();
+
+            // Проверяем, существует ли запись (есть ли ID)
+            $isEdit = $data instanceof PeopleArchive && $data->getId() !== null;
+
+            $form->add('mediaFile', VichFileType::class, [
                 'label' => 'Медиа',
                 'attr' => $isEdit ? [] : ['required' => true],
                 'label_attr' => $isEdit ? [] : ['class' => 'required'],
                 'allow_delete' => false,
                 'download_uri' => true,
-                'help' => '<pre>' . htmlspecialchars(print_r($options, true)) . '</pre>' . '
+                'help' => '
                     <div class="mt-2">
                         <strong>Допустимые форматы:</strong><br>
                         <span class="badge badge-info">*.jpg</span>
@@ -62,11 +71,12 @@ class PeopleArchiveType extends AbstractType
                             'image/png',
                             'image/webp',
                         ],
-                        'mimeTypesMessage' => 'Пожалуйста, загрузите файл в формате JPG, JPEG, PNG, WEBP, MP4, WEBM, DOCX или PDF.',
+                        'mimeTypesMessage' => 'Пожалуйста, загрузите файл в формате JPG, JPEG, PNG или WEBP.',
                         'maxSizeMessage' => 'Файл слишком большой (максимум {{ limit }}).',
                     ]),
                 ],
             ]);
+        });
     }
 
     public function configureOptions(OptionsResolver $resolver): void
