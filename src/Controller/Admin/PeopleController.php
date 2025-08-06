@@ -78,6 +78,9 @@ class PeopleController extends AbstractCrudController
             ->setFormTypeOptions([
                 'allow_delete' => false,
                 'download_uri' => false,
+                'attr' => [
+                    'accept' => '.jpg,.jpeg,.png,.webp',
+                ],
                 'constraints' => [
                     new File([
                         'maxSize' => '20M',

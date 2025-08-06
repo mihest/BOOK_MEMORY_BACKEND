@@ -49,7 +49,10 @@ class PeopleArchiveType extends AbstractType
 
             $form->add('mediaFile', VichFileType::class, [
                 'label' => 'Медиа',
-                'attr' => $isEdit ? [] : ['required' => true],
+                'attr' => $isEdit ? [] : [
+                    'required' => true,
+                    'accept' => '.jpg,.jpeg,.png,.webp,.mp4,.ogg,.docx,.pdf,.mp3',
+                ],
                 'label_attr' => $isEdit ? [] : ['class' => 'required'],
                 'allow_delete' => false,
                 'download_uri' => true,
@@ -59,19 +62,27 @@ class PeopleArchiveType extends AbstractType
                         <span class="badge badge-info">*.jpg</span>
                         <span class="badge badge-info">*.jpeg</span>
                         <span class="badge badge-info">*.png</span>
-                        <span class="badge badge-info">*.webp</span>
+                        <span class="badge badge-info">*.mp4</span>
+                        <span class="badge badge-info">*.mp3</span>
+                        <span class="badge badge-info">*.ogg</span>
+                        <span class="badge badge-info">*.pdf</span>
+                        <span class="badge badge-info">*.docx</span>
                     </div>
                 ',
-                'constraints' => $isEdit ? [] : [
+                'constraints' => [
                     new File([
                         'maxSize' => '20M',
                         'mimeTypes' => [
                             'image/jpeg',
                             'image/jpg',
                             'image/png',
-                            'image/webp',
+                            'video/mp4',
+                            'audio/mpeg',
+                            'audio/ogg',
+                            'application/pdf',
+                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                         ],
-                        'mimeTypesMessage' => 'Пожалуйста, загрузите файл в формате JPG, JPEG, PNG или WEBP.',
+                        'mimeTypesMessage' => 'Пожалуйста, загрузите файл в формате JPG, JPEG, PNG, MP4, MP3, OGG, PDF или DOCX.',
                         'maxSizeMessage' => 'Файл слишком большой (максимум {{ limit }}).',
                     ]),
                 ],
